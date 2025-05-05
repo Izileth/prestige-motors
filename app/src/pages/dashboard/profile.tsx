@@ -6,6 +6,7 @@ import useSale from '~/src/hooks/useSale';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import type { Address } from '~/src/store/slices/user';
+import { motion, AnimatePresence } from "framer-motion";
 import {
     LineChart,
     Line,
@@ -19,7 +20,10 @@ import {
     Pie,
     Cell,
     BarChart,
-    Bar
+    Bar, 
+    ComposedChart,
+    AreaChart,
+    Area
 } from 'recharts';
 import { Check, AlertCircle, Car, User, ShoppingCart, Settings, Trash2, Heart, Star, FileText, LogOut, Key, MapPin, Camera } from 'lucide-react';
 import _ from 'lodash';
@@ -33,16 +37,16 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Input } from '~/components/ui/input';
 import { Label } from '~/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '~/components/ui/tabs';
-import { Separator } from '~/components/ui/separator';
 import { Alert, AlertDescription, AlertTitle } from '~/components/ui/alert';
 import { Badge } from '~/components/ui/badge';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '~/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '~/components/ui/select';
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '~/components/ui/table';
-import { Textarea } from '~/components/ui/textarea';
+
+import type { UserUpdateData } from '~/src/services/user';
 
 // Define o esquema de cores para os gráficos
-const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8', '#82ca9d', '#ffc658'];
+const COLORS = ['#121212', '#909090', '#303030', '#404040', '#000000', '#505050', '#100100'];
 
 
 export default function Dashboard() {
@@ -51,7 +55,9 @@ export default function Dashboard() {
         currentUser, 
         addresses, 
         loading: userLoading, 
+        stats: userStats, // As estatísticas do usuário (veículos)
         getUserById, 
+        getUserStats,
         getUserAddresses, 
         updateUserData, 
         createAddress,
@@ -63,6 +69,7 @@ export default function Dashboard() {
     const { 
         vehicles, 
         favorites, 
+        stats: saleStats, // As estatísticas de vendas (global/user)
         stats: vehicleStats, 
         loading: vehicleLoading, 
         fetchUserFavorites, 
@@ -90,6 +97,7 @@ export default function Dashboard() {
         cpf: '',
         dataNascimento: ''
     });
+
     const [passwordData, setPasswordData] = useState({
         senhaAtual: '',
         novaSenha: '',
@@ -124,6 +132,7 @@ export default function Dashboard() {
         fetchSalesBySeller(user.id); // Novo
         fetchGlobalSalesStats();
         fetchUserSalesStats(user.id); // Novo
+        getUserStats(user.id); // Adicione esta linha
         }
     }, [isAuthenticated, user?.id]);
 
@@ -160,42 +169,185 @@ export default function Dashboard() {
         setIsEditing(true);
     };
 
+    
+    const [notification, setNotification] = useState<{
+        show: boolean;
+        message: string;
+        type: 'success' | 'error';
+    }>({
+        show: false,
+        message: '',
+        type: 'success'
+    });
+
+    const [loading, setLoading] = useState({
+        profile: false,
+        password: false,
+        delete: false,
+    });
+
+    
     const handleSaveProfile = async () => {
         if (user?.id) {
-            const updateData = {
-                nome: editFormData.nome,
-                email: editFormData.email,
-                telefone: editFormData.telefone || undefined,
-                cpf: editFormData.cpf || undefined,
-                dataNascimento: editFormData.dataNascimento 
-                ? new Date(editFormData.dataNascimento).toISOString()
-                : undefined
-            };
+            setLoading(prev => ({ ...prev, profile: true }));
             
-            console.log("Dados sendo enviados:", updateData); // ← Log de debug
-            
-            await updateUserData(user.id, updateData);
-            setIsEditing(false);
+            try {
+                // Preparar os dados, validando cada campo individualmente
+                const updateData: UserUpdateData = {};
+                
+                // Apenas incluir campos que não estão vazios
+                if (editFormData.nome && editFormData.nome.trim()) {
+                    updateData.nome = editFormData.nome.trim();
+                }
+                
+                if (editFormData.email && editFormData.email.trim()) {
+                    updateData.email = editFormData.email.trim();
+                }
+                
+                // Formatar telefone conforme esperado pelo backend (apenas dígitos)
+                if (editFormData.telefone) {
+                    // Remove todos os caracteres não numéricos
+                    const telefoneFormatado = editFormData.telefone.replace(/\D/g, '');
+                    if (telefoneFormatado.length >= 10 && telefoneFormatado.length <= 11) {
+                        updateData.telefone = telefoneFormatado;
+                    } else if (telefoneFormatado === '') {
+                        // Se o usuário apagou o telefone, enviar null
+                        updateData.telefone = null;
+                    } else {
+                        throw new Error('Telefone deve ter entre 10 e 11 dígitos');
+                    }
+                }
+                
+                // Formatar CPF conforme esperado pelo backend (11 dígitos)
+                if (editFormData.cpf) {
+                    const cpfFormatado = editFormData.cpf.replace(/\D/g, '');
+                    if (cpfFormatado.length === 11 || cpfFormatado === '') {
+                        updateData.cpf = cpfFormatado || null;
+                    } else {
+                        throw new Error('CPF deve ter 11 dígitos');
+                    }
+                }
+                
+                // Tratar a data de nascimento adequadamente
+                if (editFormData.dataNascimento) {
+                    // Garantir que é uma data válida antes de converter
+                    const dateObj = new Date(editFormData.dataNascimento);
+                    if (!isNaN(dateObj.getTime())) {
+                        // O backend espera uma string no formato YYYY-MM-DD
+                        const year = dateObj.getFullYear();
+                        const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+                        const day = String(dateObj.getDate()).padStart(2, '0');
+                        updateData.dataNascimento = `${year}-${month}-${day}`;
+                    }
+                } else if (editFormData.dataNascimento === null) {
+                    // Se o usuário removeu a data, enviar null explicitamente
+                    updateData.dataNascimento = null;
+                }
+                
+                // Verificar se há dados para atualizar
+                if (Object.keys(updateData).length === 0) {
+                    throw new Error('Nenhum dado para atualizar');
+                }
+                
+                console.log("Dados sendo enviados:", updateData);
+                
+                // Enviar para o servidor
+                await updateUserData(user.id, updateData);
+                
+                // Atualizar UI
+                setIsEditing(false);
+                setNotification({
+                    show: true,
+                    message: "Perfil atualizado com sucesso!",
+                    type: "success"
+                });
+                
+                // Atualizar dados locais
+                if (user?.id) {
+                    getUserById(user.id);
+                }
+            } catch (error) {
+                console.error("Erro ao atualizar perfil:", error);
+                setNotification({
+                    show: true,
+                    message: `Erro ao atualizar perfil: ${error instanceof Error ? error.message : 'Tente novamente.'}`,
+                    type: "error"
+                });
+            } finally {
+                setLoading(prev => ({ ...prev, profile: false }));
+            }
         }
     };
-    
-    const handleSavePassword = () => {
+
+    const handleSavePassword = async () => {
+        // Validação local - verifica se as senhas coincidem
         if (passwordData.novaSenha !== passwordData.confirmarSenha) {
-        setShowPasswordAlert(true);
-        return;
+            setShowPasswordAlert(true);
+            return;
         }
         
-        // Implementar lógica de alteração de senha
-        console.log('Alterando senha...');
+        if (!passwordData.senhaAtual || !passwordData.novaSenha) {
+            setNotification({
+                show: true,
+                message: "Senhas atuais e novas são obrigatórias",
+                type: "error"
+            });
+            return;
+        }
         
-        // Resetar o formulário
-        setPasswordData({
-        senhaAtual: '',
-        novaSenha: '',
-        confirmarSenha: ''
-        });
+        // Iniciar loading
+        setLoading(prev => ({ ...prev, password: true }));
         
-        setShowPasswordAlert(false);
+        try {
+            if (!user?.id) {
+                throw new Error("ID do usuário não encontrado");
+            }
+            
+            // Preparar dados para envio
+            const updateData: UserUpdateData = {
+                senhaAtual: passwordData.senhaAtual,
+                senha: passwordData.novaSenha // 'senha' é o campo esperado pelo backend, não 'novaSenha'
+            };
+            
+            console.log("Enviando alteração de senha...");
+            
+            // Reutilizar a mesma função que atualiza o usuário
+            await updateUserData(user.id, updateData);
+            
+            // Feedback ao usuário
+            setNotification({
+                show: true,
+                message: "Senha alterada com sucesso!",
+                type: "success"
+            });
+            
+            // Resetar o formulário
+            setPasswordData({
+                senhaAtual: '',
+                novaSenha: '',
+                confirmarSenha: ''
+            });
+            
+            setShowPasswordAlert(false);
+        } catch (error) {
+            console.error("Erro ao alterar senha:", error);
+            
+            // Feedback de erro específico para o usuário
+            let errorMessage = "Erro ao alterar senha.";
+            
+            // Se o erro for relacionado à senha atual incorreta (comum neste caso)
+            if (error instanceof Error && error.message.includes("senha atual")) {
+                errorMessage = "Senha atual incorreta. Por favor, verifique.";
+            }
+            
+            setNotification({
+                show: true,
+                message: errorMessage,
+                type: "error"
+            });
+        } finally {
+            setLoading(prev => ({ ...prev, password: false }));
+        }
     };
 
     const handleAddAddress = async () => {
@@ -259,48 +411,7 @@ export default function Dashboard() {
         await logout();
         }
     };
-
-    // Formatar dados para os gráficos
-    const formatSalesData = () => {
-        if (!stats.global?.monthlySales) return [];
-        return stats.global.monthlySales.map(item => ({
-        name: item.month,
-        vendas: item.count,
-        valor: item.total / 1000 // Convertendo para milhares para melhor visualização
-        }));
-    };
-
-    
-
-    const formatVehiclesByFuelType = () => {
-        if (!vehicleStats?.byFuelType) return [];
-        return Object.entries(vehicleStats.byFuelType).map(([name, value]) => ({
-        name,
-        value
-        }));
-    };
-
-    const formatVehiclesByCategory = () => {
-        if (!vehicleStats?.byCategory) return [];
-        return Object.entries(vehicleStats.byCategory).map(([name, value]) => ({
-        name,
-        value
-        }));
-    };
-
-   const formatSalesByStatus = (scope: 'global' | 'user' = 'global') => {
-        // Acessa stats.global.byStatus ou stats.user.byStatus conforme o parâmetro
-        const statusData = scope === 'global' 
-            ? stats.global?.byStatus 
-            : stats.user?.byStatus;
-        
-        if (!statusData) return [];
-        
-        return Object.entries(statusData).map(([name, value]) => ({
-            name,
-            value
-        }));
-    };
+ 
 
     if (authStatus === 'loading' || userLoading) {
         return (
@@ -345,57 +456,61 @@ export default function Dashboard() {
 
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
             <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Total de Vendas</CardTitle>
-                <ShoppingCart className="w-4 h-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-                <div className="text-2xl font-bold">{stats.global?.totalSales || 0}</div>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Total de Veículos</CardTitle>
+                <Car className="w-4 h-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                <div className="text-2xl font-bold">{userStats?.totalVehicles || 0}</div>
                 <p className="text-xs text-muted-foreground">
-                    Receita total: R$ {stats.global?.totalRevenue?.toLocaleString('pt-BR') || 0}
+                    {((userStats?.totalVehicles || 0) / (vehicleStats?.totalVehicles || 1) * 100).toFixed(1)}% do catálogo
                 </p>
-            </CardContent>
+                </CardContent>
             </Card>
             
             <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Valor Médio</CardTitle>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Valor Total</CardTitle>
                 <FileText className="w-4 h-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
+                </CardHeader>
+                <CardContent>
                 <div className="text-2xl font-bold">
-                R$ {stats.user?.totalSales?.toLocaleString('pt-BR')|| 0}
+                    R$ {userStats?.valorTotalInventario?.toLocaleString('pt-BR') || 0}
                 </div>
                 <p className="text-xs text-muted-foreground">
-                Por transação
+                    Em inventário
                 </p>
-            </CardContent>
+                </CardContent>
             </Card>
             
             <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Veículos Cadastrados</CardTitle>
-                <Car className="w-4 h-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-                <div className="text-2xl font-bold">{vehicleStats?.totalVehicles || 0}</div>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Preço Médio</CardTitle>
+                <Star className="w-4 h-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                <div className="text-2xl font-bold">
+                    R$ {userStats?.precoMedio?.toLocaleString('pt-BR') || 0}
+                </div>
                 <p className="text-xs text-muted-foreground">
-                Preço médio: R$ {vehicleStats?.averagePrice?.toLocaleString('pt-BR') || 0}
+                    Por veículo
                 </p>
-            </CardContent>
+                </CardContent>
             </Card>
             
             <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Veículos Favoritos</CardTitle>
-                <Heart className="w-4 h-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-                <div className="text-2xl font-bold">{favorites?.length || 0}</div>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Faixa de Preços</CardTitle>
+                <ShoppingCart className="w-4 h-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                <div className="text-2xl font-bold">
+                    R$ {userStats?.precoMinimo?.toLocaleString('pt-BR') || 0} - R$ {userStats?.precoMaximo?.toLocaleString('pt-BR') || 0}
+                </div>
                 <p className="text-xs text-muted-foreground">
-                {((favorites?.length || 0) / (vehicleStats?.totalVehicles || 1) * 100).toFixed(1)}% do catálogo
+                    Min - Max
                 </p>
-            </CardContent>
+                </CardContent>
             </Card>
         </div>
 
@@ -498,7 +613,7 @@ export default function Dashboard() {
                         </div>
                         <div>
                             <p className="text-sm font-medium text-muted-foreground">CPF</p>
-                            <p>{currentUser?.cpf || "Não informado"}</p>
+                            <p>{currentUser?.cpf || "Oculto"}</p>
                         </div>
                         </div>
                         <div>
@@ -1030,84 +1145,74 @@ export default function Dashboard() {
             </Card>
             </TabsContent>
 
-            {/* Aba de estatísticas */}
+          {/* Aba de estatísticas */}
             <TabsContent value="estatisticas" className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Gráfico 1: Distribuição de Preços (Barra Horizontal) */}
                 <Card>
                 <CardHeader>
-                    <CardTitle>Vendas Mensais</CardTitle>
+                    <CardTitle>Distribuição de Preços</CardTitle>
                     <CardDescription>
-                    Histórico de vendas nos últimos meses
+                    Comparação entre mínimo, médio e máximo
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
                     <div className="h-[300px]">
                     <ResponsiveContainer width="100%" height="100%">
-                        <LineChart
-                        data={stats.global?.monthlySales || []}
+                        <BarChart
+                        layout="vertical"
+                        data={[
+                            { name: 'Mínimo', value: userStats?.precoMinimo || 0 },
+                            { name: 'Médio', value: userStats?.precoMedio || 0 },
+                            { name: 'Máximo', value: userStats?.precoMaximo || 0 }
+                        ]}
+                        margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                        >
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis type="number" />
+                        <YAxis dataKey="name" type="category" />
+                        <Tooltip 
+                            formatter={(value) => [`R$ ${Number(value).toLocaleString('pt-BR')}`, 'Valor']}
+                        />
+                        <Legend />
+                        <Bar dataKey="value" fill="#121212" name="Preço (R$)" />
+                        </BarChart>
+                    </ResponsiveContainer>
+                    </div>
+                </CardContent>
+                </Card>
+
+                {/* Gráfico 2: Média de Anos (Barra Cluster) */}
+                <Card>
+                <CardHeader>
+                    <CardTitle>Comparação de Anos</CardTitle>
+                    <CardDescription>
+                    Média de ano de fabricação vs modelo
+                    </CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <div className="h-[300px]">
+                    <ResponsiveContainer width="100%" height="100%">
+                        <BarChart
+                        data={[
+                            { 
+                            name: 'Anos', 
+                            Fabricação: userStats?.anoFabricacaoMedio || 0, 
+                            Modelo: userStats?.anoModeloMedio || 0 
+                            }
+                        ]}
                         margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
                         >
                         <CartesianGrid strokeDasharray="3 3" />
                         <XAxis dataKey="name" />
                         <YAxis />
                         <Tooltip 
-                            formatter={(value, name) => 
-                            name === 'valor' ? [`R$ ${value} mil`, 'Valor'] : [value, 'Vendas']
-                            }
+                            formatter={(value) => [value, 'Ano']}
                         />
                         <Legend />
-                        <Line
-                            type="monotone"
-                            dataKey="vendas"
-                            stroke="#8884d8"
-                            activeDot={{ r: 8 }}
-                        />
-                        <Line
-                            type="monotone"
-                            dataKey="valor"
-                            stroke="#82ca9d"
-                        />
-                        </LineChart>
-                    </ResponsiveContainer>
-                    </div>
-                </CardContent>
-                </Card>
-
-                <Card>
-                <CardHeader>
-                    <CardTitle>Status das Vendas</CardTitle>
-                    <CardDescription>
-                    Distribuição por status de venda
-                    </CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <div className="h-[300px]">
-                    <ResponsiveContainer width="100%" height="100%">
-                        <PieChart>
-                        <Pie
-                            data={formatSalesByStatus('user')}
-                            cx="50%"
-                            cy="50%"
-                            labelLine={false}
-                            outerRadius={80}
-                            fill="#8884d8"
-                            dataKey="value"
-                            label={({ name, percent }) => 
-                            `${name}: ${(percent * 100).toFixed(0)}%`
-                            }
-                        >
-                            {formatSalesByStatus().map((entry, index) => (
-                            <Cell
-                                key={`cell-${index}`}
-                                fill={COLORS[index % COLORS.length]}
-                            />
-                            ))}
-                        </Pie>
-                        <Tooltip 
-                            formatter={(value) => [`${value} vendas`, 'Quantidade']}
-                        />
-                        <Legend />
-                        </PieChart>
+                        <Bar dataKey="Fabricação" fill="#121212" />
+                        <Bar dataKey="Modelo" fill="#909090" />
+                        </BarChart>
                     </ResponsiveContainer>
                     </div>
                 </CardContent>
@@ -1115,37 +1220,52 @@ export default function Dashboard() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Gráfico 3: Valor Total vs Quantidade (Combo) */}
                 <Card>
                 <CardHeader>
-                    <CardTitle>Tipos de Combustível</CardTitle>
+                    <CardTitle>Inventário</CardTitle>
                     <CardDescription>
-                    Distribuição dos veículos por tipo de combustível
+                    Relação entre quantidade e valor total
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
                     <div className="h-[300px]">
                     <ResponsiveContainer width="100%" height="100%">
-                        <BarChart
-                        data={formatVehiclesByFuelType()}
+                        <ComposedChart
+                        data={[
+                            { 
+                            name: 'Inventário', 
+                            quantidade: userStats?.totalVehicles || 0, 
+                            valor: (userStats?.valorTotalInventario || 0) / 1000 // Em milhares
+                            }
+                        ]}
                         margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
                         >
                         <CartesianGrid strokeDasharray="3 3" />
                         <XAxis dataKey="name" />
-                        <YAxis />
-                        <Tooltip />
+                        <YAxis yAxisId="left" orientation="left" />
+                        <YAxis yAxisId="right" orientation="right" />
+                        <Tooltip 
+                            formatter={(value, name) => 
+                            name === 'valor' ? [`R$ ${Number(value).toLocaleString('pt-BR')} mil`, 'Valor'] 
+                            : [value, 'Quantidade']
+                            }
+                        />
                         <Legend />
-                        <Bar dataKey="value" fill="#8884d8" name="Veículos" />
-                        </BarChart>
+                        <Bar yAxisId="left" dataKey="quantidade" fill="#121212" name="Quantidade" />
+                        <Line yAxisId="right" type="monotone" dataKey="valor" stroke="#909090" name="Valor (mil R$)" />
+                        </ComposedChart>
                     </ResponsiveContainer>
                     </div>
                 </CardContent>
                 </Card>
 
+                {/* Gráfico 4: Proporção Preço Médio (Pizza) */}
                 <Card>
                 <CardHeader>
-                    <CardTitle>Categorias de Veículos</CardTitle>
+                    <CardTitle>Proporção de Valores</CardTitle>
                     <CardDescription>
-                    Distribuição dos veículos por categoria
+                    Relação entre mínimo, médio e máximo
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -1153,7 +1273,11 @@ export default function Dashboard() {
                     <ResponsiveContainer width="100%" height="100%">
                         <PieChart>
                         <Pie
-                            data={formatVehiclesByCategory()}
+                            data={[
+                            { name: 'Mínimo', value: userStats?.precoMinimo || 1 },
+                            { name: 'Médio', value: (userStats?.precoMedio || 0) - (userStats?.precoMinimo || 0) },
+                            { name: 'Máximo', value: (userStats?.precoMaximo || 0) - (userStats?.precoMedio || 0) }
+                            ]}
                             cx="50%"
                             cy="50%"
                             labelLine={false}
@@ -1164,7 +1288,7 @@ export default function Dashboard() {
                             `${name}: ${(percent * 100).toFixed(0)}%`
                             }
                         >
-                            {formatVehiclesByCategory().map((entry, index) => (
+                            {['Mínimo', 'Médio', 'Máximo'].map((entry, index) => (
                             <Cell
                                 key={`cell-${index}`}
                                 fill={COLORS[index % COLORS.length]}
@@ -1172,10 +1296,95 @@ export default function Dashboard() {
                             ))}
                         </Pie>
                         <Tooltip 
-                            formatter={(value) => [`${value} veículos`, 'Quantidade']}
+                            formatter={(value) => [`R$ ${Number(value).toLocaleString('pt-BR')}`, 'Valor']}
                         />
                         <Legend />
                         </PieChart>
+                    </ResponsiveContainer>
+                    </div>
+                </CardContent>
+                </Card>
+
+                <Card>
+                <CardHeader>
+                    <CardTitle>Distribuição de Valores</CardTitle>
+                    <CardDescription>
+                    Comparação entre mínimo, médio e máximo
+                    </CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <div className="h-[300px]">
+                    <ResponsiveContainer width="100%" height="100%">
+                        <LineChart
+                        data={[
+                            { name: 'Mínimo', valor: userStats?.precoMinimo || 0 },
+                            { name: 'Médio', valor: userStats?.precoMedio || 0 },
+                            { name: 'Máximo', valor: userStats?.precoMaximo || 0 }
+                        ]}
+                        margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                        >
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="name" />
+                        <YAxis />
+                        <Tooltip 
+                            formatter={(value) => [`R$ ${Number(value).toLocaleString('pt-BR')}`, 'Valor']}
+                        />
+                        <Legend />
+                        <Line
+                            type="monotone"
+                            dataKey="valor"
+                            stroke="#121212"
+                            activeDot={{ r: 8 }}
+                            name="Preço"
+                        />
+                        </LineChart>
+                    </ResponsiveContainer>
+                    </div>
+                </CardContent>
+            </Card>
+
+            <Card>
+                <CardHeader>
+                    <CardTitle>Evolução dos Anos</CardTitle>
+                    <CardDescription>
+                    Comparação entre ano de fabricação e modelo
+                    </CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <div className="h-[300px]">
+                    <ResponsiveContainer width="100%" height="100%">
+                        <AreaChart
+                        data={[
+                            { 
+                            name: 'Ano', 
+                            fabricacao: userStats?.anoFabricacaoMedio || 0, 
+                            modelo: userStats?.anoModeloMedio || 0 
+                            }
+                        ]}
+                        margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                        >
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="name" />
+                        <YAxis />
+                        <Tooltip 
+                            formatter={(value) => [value, 'Ano']}
+                        />
+                        <Legend />
+                        <Area 
+                            type="monotone" 
+                            dataKey="fabricacao" 
+                            stroke="#121212" 
+                            fill="#121212" 
+                            name="Fabricação" 
+                        />
+                        <Area 
+                            type="monotone" 
+                            dataKey="modelo" 
+                            stroke="#909090" 
+                            fill="#909090" 
+                            name="Modelo" 
+                        />
+                        </AreaChart>
                     </ResponsiveContainer>
                     </div>
                 </CardContent>

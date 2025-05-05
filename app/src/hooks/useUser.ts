@@ -6,6 +6,7 @@ import {
     deleteUser,
     fetchUserAddresses,
     addAddress,
+    fetchUserStats,
     updateAddress,
     deleteAddress,
     uploadAvatar,
@@ -27,6 +28,7 @@ interface UseUserStoreReturn extends Omit<UserState, 'loading' | 'error' | 'succ
     getUserById: (id: string) => Promise<void>;
     updateUserData: (id: string, userData: UserUpdateData) => Promise<void>;
     removeUser: (id: string) => Promise<void>;
+    getUserStats: (id: string) => Promise<void>
     getUserAddresses: (userId: string) => Promise<void>;
     createAddress: (userId: string, addressData: AddressData) => Promise<void>;
     modifyAddress: (addressId: string, addressData: AddressData) => Promise<void>;
@@ -55,7 +57,10 @@ interface UseUserStoreReturn extends Omit<UserState, 'loading' | 'error' | 'succ
     const removeUser = async (id: string) => {
         await dispatch(deleteUser(id));
     };
-    
+    const getUserStats = async (id: string) => {
+        await dispatch(fetchUserStats(id));
+    };
+
     const getUserAddresses = async (userId: string) => {
         await dispatch(fetchUserAddresses(userId));
     };
@@ -89,6 +94,7 @@ interface UseUserStoreReturn extends Omit<UserState, 'loading' | 'error' | 'succ
         getUserById,
         updateUserData,
         removeUser,
+        getUserStats,
         getUserAddresses,
         createAddress,
         modifyAddress,

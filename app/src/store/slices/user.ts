@@ -28,11 +28,39 @@ export interface Address {
   userId: string;
 }
 
+export interface VehicleStats {
+  _sum: {
+    preco: number | null;
+  };
+  _avg: {
+    preco: number | null;
+    anoFabricacao: number | null;
+    anoModelo: number | null;
+  };
+  _min: {
+    preco: number | null;
+  };
+  _max: {
+    preco: number | null;
+  };
+}
+
+
+export interface UserStats {
+  totalVehicles: number;
+  valorTotalInventario: number;
+  precoMedio: number;
+  anoFabricacaoMedio: number;
+  anoModeloMedio: number;
+  precoMinimo: number;
+  precoMaximo: number;
+}
 
 export interface UserState {
   currentUser: User | null;
   users: User[];
   addresses: Address[];
+  stats: UserStats | null; // Adicione esta linha
   loading: boolean;
   error: string | null;
   success: boolean;
@@ -42,6 +70,7 @@ const initialState: UserState = {
   currentUser: null,
   users: [],
   addresses: [],
+  stats: null, // Adicione esta linha
   loading: false,
   error: null,
   success: false,
@@ -78,6 +107,17 @@ export const deleteUser = createAsyncThunk(
       return id;
     } catch (error) {
       return rejectWithValue(error instanceof Error ? error.message : 'Failed to delete user');
+    }
+  }
+);
+
+export const fetchUserStats = createAsyncThunk(
+  'user/fetchStats',
+  async (id: string, { rejectWithValue }) => {
+    try {
+      return await userService.userService.getUserStats(id);
+    } catch (error) {
+      return rejectWithValue(error instanceof Error ? error.message : 'Failed to fetch user stats');
     }
   }
 );
@@ -188,6 +228,23 @@ const userSlice = createSlice({
       state.success = true;
     });
     builder.addCase(deleteUser.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.payload as string;
+    });
+
+    //fetchUserStats
+
+    builder.addCase(fetchUserStats.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+    });
+    
+    builder.addCase(fetchUserStats.fulfilled, (state, action: PayloadAction<UserStats>) => {
+      state.loading = false;
+      state.stats = action.payload;
+    });
+    
+    builder.addCase(fetchUserStats.rejected, (state, action) => {
       state.loading = false;
       state.error = action.payload as string;
     });
