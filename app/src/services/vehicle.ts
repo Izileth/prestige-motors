@@ -26,8 +26,8 @@ export const vehicleService = {
 
     async getVehicles(params?: VehicleSearchParams): Promise<Vehicle[]> {
         const response = await api.get('/vehicles', { params });
-        
-        return response.data || []; // ← Garanta que sempre retorne array
+        console.log('Resposta da API:', response.data); // ← Verifique aqui
+        return response.data?.data || []; // Ou o caminho correto para o array
     },
 
     async getVehicleById(id: string): Promise<Vehicle> {
@@ -35,8 +35,9 @@ export const vehicleService = {
         return response.data;
     },
 
+
     async createVehicle(data: VehicleCreateInput): Promise<Vehicle> {
-        const response = await api.post('/vehicles', data);
+        const response = await api.post<Vehicle>('/vehicles', data);
         return response.data;
     },
 
@@ -56,7 +57,7 @@ export const vehicleService = {
 
     async addFavorite(vehicleId: string): Promise<Vehicle> {
         const response = await api.post(`/vehicles/${vehicleId}/favorites`);
-        return response.data;
+        return response.data; 
     },
 
     async removeFavorite(vehicleId: string): Promise<void> {
@@ -80,14 +81,21 @@ export const vehicleService = {
 
     async uploadImages(vehicleId: string, files: File[]): Promise<Vehicle> {
         const formData = new FormData();
-        files.forEach(file => formData.append('images', file));
+        files.forEach(file => formData.append('images', file)); // <-- 'images' deve bater com o nome no multer
         
         const response = await api.post(`/vehicles/${vehicleId}/images`, formData, {
-        headers: {
-            'Content-Type': 'multipart/form-data',
-        },
+            headers: {
+            'Content-Type': 'multipart/form-data', // <-- Isso está correto
+            },
         });
         return response.data;
+    },
+    
+
+    async deleteVehicleImage(vehicleId: string, imageUrl: string): Promise<void> {
+        await api.delete(`/vehicles/${vehicleId}/images`, {
+          data: { imageUrl } // Envia a URL da imagem a ser removida no corpo da requisição
+        });
     },
 
     async getVehicleStats(): Promise<VehicleStats> {

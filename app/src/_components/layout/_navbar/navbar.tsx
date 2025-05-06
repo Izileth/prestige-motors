@@ -95,10 +95,10 @@ const Navigation: React.FC<NavigationProps> = ({
     };
     
     const menuItems: MenuItem[] = [
-        { name: "Home", href: "/" },
-        { name: "Coleção", href: "/colecao" },
+        { name: "Inicio", href: "/" },
+        { name: "Destaques", href: "/colecao" },
         { 
-            name: "Categorias", 
+            name: "Classes", 
             href: "#",
             submenu: [
                 { name: "Novo", href: "/categorias/novo" },
@@ -106,8 +106,8 @@ const Navigation: React.FC<NavigationProps> = ({
                 { name: "Essenciais", href: "/categorias/essenciais" }
             ] 
         },
-        { name: "Lookbook", href: "/lookbook" },
-        { name: "Sobre", href: "/sobre" }
+        { name: "Veiculos", href: "/vehicles" },
+        { name: "Anunciar", href: "/vehicles/create" }
     ];
     
     const isActive = (path: string): boolean => pathname === path;

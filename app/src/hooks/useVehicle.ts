@@ -1,4 +1,5 @@
 import { useAppDispatch, useAppSelector } from '../store/hooks';
+import { useState } from 'react';
 import { 
   fetchVehicles,
   fetchVehicleById,
@@ -15,6 +16,7 @@ import {
   fetchVehicleStats,
   resetVehicleState,
   setCurrentVehicle,
+  deleteVehicleImage
 } from '~/src/store/slices/vehicle';
 
 import type { Vehicle } from '~/src/store/slices/vehicle';
@@ -30,7 +32,9 @@ import type {
  */
 const useVehicle = () => {
   const dispatch = useAppDispatch();
+  const [singleVehicle, setSingleVehicle] = useState<Vehicle | null>(null);
   const vehicleState = useAppSelector((state) => state.vehicles);
+
 
   return {
     ...vehicleState,
@@ -39,17 +43,39 @@ const useVehicle = () => {
         dispatch(fetchVehicles(params || {})),
       
     // Buscar veículo por ID
-    fetchVehicleById: (id: string) => 
-      dispatch(fetchVehicleById(id)),
+    
+    fetchVehicleById: async (id: string) => {
+      const result = await dispatch(fetchVehicleById(id));
+      return result.payload; // Retorna diretamente o veículo completo
+    },
       
     // Criar novo veículo
-    createVehicle: (data: VehicleCreateInput) => 
-      dispatch(createVehicle(data)),
+
+    createVehicle: async (data: VehicleCreateInput) => {
+      const result = await dispatch(createVehicle(data));
+      if (createVehicle.fulfilled.match(result)) {
+        return result.payload; // Isso será do tipo Vehicle
+      }
+      throw new Error(result.error?.message || 'Failed to create vehicle');
+    },
       
     // Atualizar veículo
-    updateVehicle: (id: string, data: VehicleUpdateInput) => 
-      dispatch(updateVehicle({ id, data })),
-      
+    updateVehicle: async ({ id, data }: { id: string; data: VehicleUpdateInput }) => {
+      const result = await dispatch(updateVehicle({ id, data }));
+      if (updateVehicle.fulfilled.match(result)) {
+        return result.payload;
+      }
+      throw new Error(result.error?.message || 'Failed to update vehicle');
+    },
+
+    deleteVehicleImage: async (vehicleId: string, imageUrl: string) => {
+      try {
+        await dispatch(deleteVehicleImage({ vehicleId, imageUrl })).unwrap();
+      } catch (error) {
+        console.error('Erro ao remover imagem:', error);
+        throw error; // Pode tratar o erro de forma específica se necessário
+      }
+    },
     // Excluir veículo
     deleteVehicle: (id: string) => 
       dispatch(deleteVehicle(id)),

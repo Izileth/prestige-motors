@@ -36,8 +36,16 @@ export interface Vehicle {
   aceitaTroca?: boolean;
   parcelamento?: number;
   localizacaoId?: string;
-  imagens?: string[];
+  imagens: VehicleImage[];
   isFavorite?: boolean;
+}
+
+export interface VehicleImage {
+  id: string;
+  url: string;
+  isMain?: boolean;
+  ordem?: number;
+  publicId?: string;
 }
 
 export interface Review {
@@ -72,6 +80,7 @@ const initialState: VehicleState = {
   vehicles: [],
   featuredVehicles: [],
   favorites: [],
+  
   currentVehicle: null,
   reviews: [],
   stats: null,
@@ -103,9 +112,10 @@ export const fetchVehicleById = createAsyncThunk(
   }
 );
 
-export const createVehicle = createAsyncThunk(
+
+export const createVehicle = createAsyncThunk<Vehicle, VehicleCreateInput>(
   'vehicles/create',
-  async (data: VehicleCreateInput, { rejectWithValue }) => {
+  async (data, { rejectWithValue }) => {
     try {
       return await vehicleService.createVehicle(data);
     } catch (error) {
@@ -215,6 +225,18 @@ export const uploadVehicleImages = createAsyncThunk(
   }
 );
 
+export const deleteVehicleImage = createAsyncThunk(
+  'vehicles/deleteImage',
+  async ({ vehicleId, imageUrl }: { vehicleId: string; imageUrl: string }, { rejectWithValue }) => {
+    try {
+      await vehicleService.deleteVehicleImage(vehicleId, imageUrl);
+      return imageUrl; // Retorna a URL removida para atualizar o estado
+    } catch (error) {
+      return rejectWithValue(error instanceof Error ? error.message : 'Failed to delete image');
+    }
+  }
+);
+
 export const fetchVehicleStats = createAsyncThunk(
   'vehicles/fetchStats',
   async (_, { rejectWithValue }) => {
@@ -244,10 +266,11 @@ const vehicleSlice = createSlice({
     });
 
     builder.addCase(fetchVehicleById.fulfilled, (state, action) => {
-      state.loading = false;
-      state.currentVehicle = action.payload;
+      state.currentVehicle = {
+        ...action.payload, // Mantém todos os campos originais
+        imagens: action.payload.imagens || [] // Garante array mesmo se vazio
+      };
     });
-
     builder.addCase(createVehicle.fulfilled, (state, action) => {
       state.loading = false;
       state.vehicles.push(action.payload);
@@ -286,12 +309,27 @@ const vehicleSlice = createSlice({
 
     builder.addCase(addFavorite.fulfilled, (state, action) => {
       state.loading = false;
-      state.favorites.push(action.payload);
+      
+      // Garante que favorites seja um array
+      if (!Array.isArray(state.favorites)) {
+        state.favorites = [];
+      }
+    
+      // Evita duplicatas
+      if (!state.favorites.some(v => v.id === action.payload.id)) {
+        state.favorites.push(action.payload);
+      }
+    
+      // Atualiza o status nos veículos
       state.vehicles = state.vehicles.map(vehicle =>
-        vehicle.id === action.payload.id ? { ...vehicle, isFavorite: true } : vehicle
+        vehicle.id === action.payload.id 
+          ? { ...vehicle, isFavorite: true } 
+          : vehicle
       );
+      
+      // Atualiza o veículo atual se for o mesmo
       if (state.currentVehicle?.id === action.payload.id) {
-        state.currentVehicle = { ...state.currentVehicle, isFavorite: true };
+        state.currentVehicle.isFavorite = true;
       }
     });
 
@@ -317,6 +355,7 @@ const vehicleSlice = createSlice({
       state.success = true;
     });
 
+    // Upload Imagem
     builder.addCase(uploadVehicleImages.fulfilled, (state, action) => {
       state.loading = false;
       state.currentVehicle = action.payload;
@@ -324,6 +363,27 @@ const vehicleSlice = createSlice({
         vehicle.id === action.payload.id ? action.payload : vehicle
       );
       state.success = true;
+    });
+
+    // Deletar Imagem
+    builder.addCase(deleteVehicleImage.fulfilled, (state, action) => {
+      // Atualiza o currentVehicle se estiver carregado
+      if (state.currentVehicle) {
+        state.currentVehicle.imagens = state.currentVehicle.imagens?.filter(
+          img => img.id !== action.payload  
+        );
+      }
+      
+      // Atualiza a lista de veículos
+      state.vehicles = state.vehicles.map(vehicle => {
+        if (vehicle.id === action.meta.arg.vehicleId) {
+          return {
+            ...vehicle,
+            imagens: vehicle.imagens?.filter(img => img.id !== action.payload) 
+          };
+        }
+        return vehicle;
+      });
     });
 
     builder.addCase(fetchVehicleStats.fulfilled, (state, action) => {

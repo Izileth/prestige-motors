@@ -9,5 +9,11 @@ export default [
     route("passwords/reset", "routes/_password/reset.tsx"),
 
     route("dashboard", "routes/_user/dashboard.tsx"),
+
+    route("vehicles", "routes/_vehicle/vehicle.tsx"),
+    route("vehicles/:id", "routes/_vehicle/_id/vehicleId.tsx"),
+    route("vehicles/create", "routes/_vehicle/_create/create.tsx"),
+    route("vehicles/update", "routes/_vehicle/_update/update.tsx"),
+
     
 ] satisfies RouteConfig;
