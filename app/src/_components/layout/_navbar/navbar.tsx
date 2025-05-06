@@ -207,10 +207,10 @@ const Navigation: React.FC<NavigationProps> = ({
                                         <li>
                                             <NavigationMenuLink asChild>
                                                 <Link 
-                                                    to="/pedidos" 
+                                                    to="/vehicles/user" 
                                                     className="flex items-center justify-between py-2 text-xs font-extralight tracking-wider"
                                                 >
-                                                    <span>Meus pedidos</span>
+                                                    <span>Meus Veículos</span>
                                                     <ChevronRight className="h-3 w-3" />
                                                 </Link>
                                             </NavigationMenuLink>

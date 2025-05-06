@@ -3,6 +3,7 @@ import type { Vehicle, Review, VehicleStats } from '~/src/store/slices/vehicle';
 
 // Parâmetros para busca de veículos
 export interface VehicleSearchParams {
+    userId?: string;
     marca?: string;
     modelo?: string;
     precoMin?: number;

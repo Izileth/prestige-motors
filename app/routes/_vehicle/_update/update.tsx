@@ -1,5 +1,5 @@
 import type { Route } from "../../+types/home";
-import { EditVehiclePage } from "~/src/pages/vehicle/(update)/vehicleUpdate";
+import { EditVehiclePage } from "~/src/pages/vehicle/(update)/vehicle.update";
 export function meta({}: Route.MetaArgs) {
     return [
         { title: "Edição de Veiculo | Prestige Motors" },

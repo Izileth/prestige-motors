@@ -110,17 +110,11 @@ export const vehicleFormSchema = z.object({
     seloOriginal: z.boolean().default(false),
     aceitaTroca: z.boolean().default(false),
     parcelamento: z.number().int().positive().optional(),
-    imagens: z.array(
-        z.union([
-            z.object({
-                id: z.string(),
-                url: z.string(),
-                isMain: z.boolean().optional(),
-                ordem: z.number().optional()
-            }),
-            z.instanceof(File)
-        ])
-    ).optional()
+
+    imagens: z.array(z.union([z.object({
+        id: z.string(),
+        url: z.string()
+    }), z.instanceof(File)])).optional()
 });
 
 export type VehicleFormValues = z.infer<typeof vehicleFormSchema>

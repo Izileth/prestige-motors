@@ -1,5 +1,5 @@
 import type { Route } from "../+types/home";
-import VehicleListingPage from "~/src/pages/vehicle/(reviews)/vehicleReview";
+import VehicleListingPage from "~/src/pages/vehicle/(reviews)/vehicle.review";
 export function meta({}: Route.MetaArgs) {
     return [
         { title: "Veículos | Prestige Motors" },
