@@ -7,7 +7,7 @@ import { Input } from '~/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '~/components/ui/select';
 import { Slider } from '~/components/ui/slider';
 import { Badge } from '~/components/ui/badge';
-import { Heart, Star, ChevronRight, Filter } from 'lucide-react';
+import { Heart, Star, ChevronRight, Filter, Zap, ShieldCheck, Calendar, Gauge, MapPin } from 'lucide-react';
 import useVehicle from '~/src/hooks/useVehicle';
 import type { Vehicle} from '~/src/store/slices/vehicle';
 import type { VehicleSearchParams } from '~/src/services/vehicle';
@@ -219,76 +219,129 @@ const VehicleListingPage = () => {
         {!loading && !error && (
             <>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
-                {Array.isArray(vehicles) && vehicles.map((vehicle) => (
-                <Card key={vehicle.id} className="hover:shadow-lg transition-shadow">
-                    <CardHeader className="relative p-0">
-                    {vehicle.imagens && vehicle.imagens.length > 0 ? (
-                        <img
-                        src={vehicle.imagens[0].url}
-                        alt={vehicle.modelo}
-                        className="w-full h-48 object-cover rounded-t-lg"
-                        />
-                    ) : (
-                        <div className="w-full h-48 bg-gray-200 rounded-t-lg flex items-center justify-center">
-                        <span className="text-gray-500">Sem imagem</span>
-                        </div>
-                    )}
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        className="absolute top-2 right-2 rounded-full bg-white/90 hover:bg-white"
-                        onClick={() => toggleFavorite(vehicle)}
-                    >
-                        <Heart
-                        size={20}
-                        className={vehicle.isFavorite ? 'fill-red-500 text-red-500' : 'text-gray-500'}
-                        />
-                    </Button>
-                    {vehicle.destaque && (
-                        <Badge variant="default" className="absolute top-2 left-2">
-                        Destaque
-                        </Badge>
-                    )}
-                    </CardHeader>
-                    <CardContent className="p-4">
-                    <div className="flex justify-between items-start mb-2">
-                        <h3 className="font-bold text-lg">
-                        {vehicle.marca} {vehicle.modelo}
-                        </h3>
-                        <div className="flex items-center gap-1">
-                        <Star size={16} className="fill-yellow-400 text-yellow-400" />
-                        <span className="text-sm">4.8</span>
-                        </div>
-                    </div>
-                    <p className="text-sm text-muted-foreground mb-3">
-                        {vehicle.anoFabricacao}/{vehicle.anoModelo} • {vehicle.quilometragem.toLocaleString('pt-BR')} km
-                    </p>
-                    <div className="flex flex-wrap gap-2 mb-3">
-                        <Badge variant="secondary">{getFuelType(vehicle.tipoCombustivel)}</Badge>
-                        <Badge variant="secondary">{getTransmissionType(vehicle.cambio)}</Badge>
-                        <Badge variant="secondary">{vehicle.portas} portas</Badge>
-                    </div>
-                    <div className="mt-4">
-                        <p className="text-xl font-bold">
-                        {formatPrice(vehicle.precoPromocional || vehicle.preco)}
-                        </p>
-                        {vehicle.precoPromocional && (
-                        <p className="text-sm line-through text-muted-foreground">
-                            {formatPrice(vehicle.preco)}
-                        </p>
-                        )}
-                    </div>
-                    </CardContent>
-                    <CardFooter className="p-4 pt-0">
-                    <Button
-                        variant="default"
-                        className="w-full"
-                        onClick={() => navigate(`/vehicles/${vehicle.id}`)}
-                    >
-                        Ver detalhes <ChevronRight size={16} className="ml-1" />
-                    </Button>
-                    </CardFooter>
-                </Card>
+            {Array.isArray(vehicles) && vehicles.map((vehicle) => (
+                    <Card key={vehicle.id} className="hover:shadow-lg transition-shadow group">
+                        <CardHeader className="relative p-0">
+                            <div className="relative">
+                                {vehicle.imagens && vehicle.imagens.length > 0 ? (
+                                    <img
+                                        src={vehicle.imagens.find(img => img.isMain)?.url || vehicle.imagens[0].url}
+                                        alt={`${vehicle.marca} ${vehicle.modelo}`}
+                                        className="w-full h-48 object-cover rounded-t-lg group-hover:opacity-90 transition-opacity"
+                                        loading="lazy"
+                                    />
+                                ) : (
+                                    <div className="w-full h-48 bg-gradient-to-br from-gray-100 to-gray-200 rounded-t-lg flex items-center justify-center">
+                                        <span className="text-gray-500">Sem imagem disponível</span>
+                                    </div>
+                                )}
+                                
+                                <div className="absolute bottom-2 left-2 flex gap-2">
+                                    {vehicle.destaque && (
+                                        <Badge variant="default" className="flex items-center gap-1">
+                                            <Zap size={14} /> Destaque
+                                        </Badge>
+                                    )}
+                                    {vehicle.seloOriginal && (
+                                        <Badge variant="secondary" className="flex items-center gap-1">
+                                            <ShieldCheck size={14} /> Original
+                                        </Badge>
+                                    )}
+                                </div>
+                                
+                                <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="absolute top-2 right-2 rounded-full bg-white/90 hover:bg-white shadow-sm"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        toggleFavorite(vehicle);
+                                    }}
+                                    aria-label={vehicle.isFavorite ? "Remover dos favoritos" : "Adicionar aos favoritos"}
+                                >
+                                    <Heart
+                                        size={20}
+                                        className={
+                                            vehicle.isFavorite 
+                                                ? 'fill-red-500 text-red-500 animate-pulse' 
+                                                : 'text-gray-500 group-hover:text-red-500 transition-colors'
+                                        }
+                                    />
+                                </Button>
+                            </div>
+                        </CardHeader>
+                        
+                        <CardContent className="p-4 space-y-3">
+                            <div className="flex justify-between items-start">
+                                <div>
+                                    <h3 className="font-bold text-lg line-clamp-1">
+                                        {vehicle.marca} {vehicle.modelo}
+                                    </h3>
+                                    <p className="text-sm text-muted-foreground flex items-center gap-1">
+                                        <Calendar size={14} className="opacity-70" />
+                                        {vehicle.anoFabricacao}/{vehicle.anoModelo} • 
+                                        <Gauge size={14} className="opacity-70 ml-1" />
+                                        {vehicle.quilometragem.toLocaleString('pt-BR')} km
+                                    </p>
+                                </div>
+                                
+                                {vehicle.vendedor && (
+                                    <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                                        <MapPin size={14} className="opacity-70" />
+                                        <span>{vehicle.vendedor.id || 'Localização'}</span>
+                                    </div>
+                                )}
+                            </div>
+                            
+                            <div className="flex flex-wrap gap-2">
+                                <Badge variant="outline" className="flex items-center gap-1">
+                                    {getFuelType(vehicle.tipoCombustivel)}
+                                </Badge>
+                                <Badge variant="outline" className="flex items-center gap-1">
+                                    {getTransmissionType(vehicle.cambio)}
+                                </Badge>
+                                <Badge variant="outline">
+                                    {vehicle.portas} portas
+                                </Badge>
+                                {vehicle.potencia && (
+                                    <Badge variant="outline">
+                                        {vehicle.potencia} cv
+                                    </Badge>
+                                )}
+                            </div>
+                            
+                            <div className="mt-2">
+                                <p className="text-xl font-bold">
+                                    {formatPrice(vehicle.precoPromocional || vehicle.preco)}
+                                </p>
+                                {vehicle.precoPromocional && (
+                                    <div className="flex items-center gap-2">
+                                        <p className="text-sm line-through text-muted-foreground">
+                                            {formatPrice(vehicle.preco)}
+                                        </p>
+                                        <Badge variant="destructive" className="text-xs">
+                                            {Math.round((1 - (vehicle.precoPromocional / vehicle.preco)) * 100)}% OFF
+                                        </Badge>
+                                    </div>
+                                )}
+                                {vehicle.parcelamento && (
+                                    <p className="text-sm text-muted-foreground mt-1">
+                                        ou {vehicle.parcelamento}x de {formatPrice((vehicle.precoPromocional || vehicle.preco) / vehicle.parcelamento)}
+                                    </p>
+                                )}
+                            </div>
+                        </CardContent>
+                        
+                        <CardFooter className="p-4 pt-0">
+                            <Button
+                                variant="default"
+                                className="w-full group-hover:bg-primary/90 transition-colors"
+                                onClick={() => navigate(`/vehicles/${vehicle.id}`)}
+                            >
+                                Ver detalhes <ChevronRight size={16} className="ml-1 opacity-80 group-hover:translate-x-1 transition-transform" />
+                            </Button>
+                        </CardFooter>
+                    </Card>
                 ))}
             </div>
 

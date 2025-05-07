@@ -389,34 +389,51 @@ const VehicleDetailsPage = () => {
                     </p>
                     )}
                 </div>
-
+            
                 <div className="space-y-4">
-                    <Button className="w-full" size="lg">
-                    <Phone size={18} className="mr-2" /> Entrar em contato
+                    <Button className="w-full" size="lg" asChild>
+                        <a href={`tel:${currentVehicle.vendedor?.telefone || ''}`}>
+                            <Phone size={18} className="mr-2" /> Entrar em contato
+                        </a>
                     </Button>
-                    <Button variant="outline" className="w-full" size="lg">
-                    <MessageSquare size={18} className="mr-2" /> Enviar mensagem
+                    <Button variant="outline" className="w-full" size="lg" asChild>
+                        <a href={`https://wa.me/55${currentVehicle.vendedor?.telefone?.replace(/\D/g, '') || ''}`}>
+                            <MessageSquare size={18} className="mr-2" /> Enviar mensagem
+                        </a>
                     </Button>
                 </div>
-
                 <div className="border-t pt-4">
                     <h3 className="font-medium mb-2">Localização</h3>
                     <div className="flex items-center gap-2 text-muted-foreground">
-                    <MapPin size={16} />
-                    <span>São Paulo, SP</span>
+                        <MapPin size={16} />
+                        <span>
+                            {currentVehicle.localizacaoId || 'São Paulo, SP'} {/* Substitua por seu campo de localização real */}
+                        </span>
                     </div>
                 </div>
 
                 <div className="border-t pt-4">
                     <h3 className="font-medium mb-2">Vendedor</h3>
                     <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center">
-                        <span className="text-sm font-medium">LO</span>
-                    </div>
-                    <div>
-                        <h4 className="font-medium">Loja Oficial</h4>
-                        <p className="text-sm text-muted-foreground">Membro desde 2020</p>
-                    </div>
+                        <div className="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center">
+                            <span className="text-sm font-medium">
+                                {currentVehicle.vendedor?.nome?.substring(0, 2).toUpperCase() || 'VD'}
+                            </span>
+                        </div>
+                        <div>
+                            <h4 className="font-medium">
+                                {currentVehicle.vendedor?.nome || 'Vendedor não informado'}
+                            </h4>
+                            <p className="text-sm text-muted-foreground">
+                                Membro desde {new Date(currentVehicle.createdAt).getFullYear()}
+                            </p>
+                            {currentVehicle.vendedor?.telefone && (
+                                <p className="text-sm text-muted-foreground mt-1">
+                                    <Phone size={14} className="inline mr-1" />
+                                    {currentVehicle.vendedor.telefone}
+                                </p>
+                            )}
+                        </div>
                     </div>
                 </div>
                 </CardContent>

@@ -28,32 +28,44 @@ export default function RegisterPage() {
     };
 
     const handleRegister = async () => {
-        // Validação básica dos campos obrigatórios
-        if (!formData.nome || !formData.email || !formData.senha) {
-            setFormError("Nome, email e senha são obrigatórios");
+            // Validações básicas
+            if (!formData.nome.trim()) {
+            setFormError("Nome é obrigatório");
             return;
-        }
-
-        try {
+            }
+        
+            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+            setFormError("Por favor, insira um email válido");
+            return;
+            }
+        
+            if (formData.senha.length < 6) {
+            setFormError("A senha deve ter pelo menos 6 caracteres");
+            return;
+            }
+        
+            if (formData.cpf && formData.cpf.replace(/\D/g, '').length !== 11) {
+            setFormError("CPF deve ter 11 dígitos");
+            return;
+            }
+        
+            try {
             await register({
-                nome: formData.nome,
-                email: formData.email,
+                nome: formData.nome.trim(),
+                email: formData.email.trim().toLowerCase(),
                 senha: formData.senha,
-                telefone: formData.telefone || undefined,
-                cpf: formData.cpf || undefined,
-                dataNascimento: formData.dataNascimento ? new Date(formData.dataNascimento) : undefined
-
+                telefone: formData.telefone?.replace(/\D/g, ''),
+                cpf: formData.cpf?.replace(/\D/g, ''),
+                dataNascimento: formData.dataNascimento 
+                ? new Date(formData.dataNascimento).toISOString()
+                : undefined
             });
             
-            // Redireciona para a página de login após registro bem-sucedido
             router("/login?registered=true");
-            
-        } catch (err) {
-            // O erro já é tratado pelo hook useAuth, mas podemos adicionar tratamento adicional aqui
+            } catch (err) {
             console.error("Erro no registro:", err);
         }
     };
-
     // Formatar CPF
     const formatCPF = (value: string) => {
         if (!value) return value;
@@ -64,6 +76,12 @@ export default function RegisterPage() {
         if (cpfDigits.length <= 9) return `${cpfDigits.slice(0, 3)}.${cpfDigits.slice(3, 6)}.${cpfDigits.slice(6)}`;
         return `${cpfDigits.slice(0, 3)}.${cpfDigits.slice(3, 6)}.${cpfDigits.slice(6, 9)}-${cpfDigits.slice(9, 11)}`;
     };
+
+    const validateCPF = (cpf: string) => {
+        if (!cpf) return true;
+        const cleaned = cpf.replace(/\D/g, '');
+        return cleaned.length === 11;
+      };
 
     // Formatar telefone
     const formatPhone = (value: string) => {

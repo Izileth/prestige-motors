@@ -38,6 +38,19 @@ export interface Vehicle {
   localizacaoId?: string;
   imagens: VehicleImage[];
   isFavorite?: boolean;
+  status: 'DISPONIVEL' | 'VENDIDO' | 'RESERVADO';
+  createdAt: string;
+  updatedAt: string;
+  visualizacoes: number;
+  vendedorId: string;
+  vendedor: {
+    id: string;
+    nome: string;
+    email: string;
+    telefone: string;
+  };
+  videos: string[];
+  especificacoes: Record<string, unknown> | null;
 }
 
 export interface VehicleImage {
@@ -68,9 +81,13 @@ export interface VehicleState {
   vehicles: Vehicle[];
   featuredVehicles: Vehicle[];
   favorites: Vehicle[];
+  userVehicles: Vehicle[]; // Novo estado para veículos do usuário
+  vendorVehicles: Vehicle[]; // Novo estado para veículos por vendedor
   currentVehicle: Vehicle | null;
   reviews: Review[];
   stats: VehicleStats | null;
+  userStats: VehicleStats | null; // Novo estado para estatísticas do usuário
+  views: number; // Novo estado para visualizações
   loading: boolean;
   error: string | null;
   success: boolean;
@@ -80,10 +97,13 @@ const initialState: VehicleState = {
   vehicles: [],
   featuredVehicles: [],
   favorites: [],
-  
+  userVehicles: [], // Inicializado
+  vendorVehicles: [], // Inicializado
   currentVehicle: null,
   reviews: [],
   stats: null,
+  userStats: null, // Inicializado
+  views: 0, // Inicializado
   loading: false,
   error: null,
   success: false,
@@ -248,6 +268,85 @@ export const fetchVehicleStats = createAsyncThunk(
   }
 );
 
+// Novos thunks para os endpoints adicionais
+export const fetchUserVehicles = createAsyncThunk(
+  'vehicles/fetchUserVehicles',
+  async (_, { rejectWithValue }) => {
+    try {
+      return await vehicleService.getUserVehicles();
+    } catch (error) {
+      return rejectWithValue(error instanceof Error ? error.message : 'Failed to fetch user vehicles');
+    }
+  }
+);
+
+export const fetchUserVehicleStats = createAsyncThunk(
+  'vehicles/fetchUserVehicleStats',
+  async (_, { rejectWithValue }) => {
+    try {
+      return await vehicleService.getUserVehicleStats();
+    } catch (error) {
+      return rejectWithValue(error instanceof Error ? error.message : 'Failed to fetch user vehicle stats');
+    }
+  }
+);
+
+export const registerVehicleView = createAsyncThunk(
+  'vehicles/registerView',
+  async (vehicleId: string, { rejectWithValue }) => {
+    try {
+      await vehicleService.registerVehicleView(vehicleId);
+      return vehicleId;
+    } catch (error) {
+      return rejectWithValue(error instanceof Error ? error.message : 'Failed to register view');
+    }
+  }
+);
+
+export const fetchVehicleViews = createAsyncThunk(
+  'vehicles/fetchViews',
+  async (_, { rejectWithValue }) => {
+    try {
+      return await vehicleService.getVehicleViews();
+    } catch (error) {
+      return rejectWithValue(error instanceof Error ? error.message : 'Failed to fetch vehicle views');
+    }
+  }
+);
+
+export const fetchVehiclesByVendor = createAsyncThunk(
+  'vehicles/fetchByVendor',
+  async (vendorId: string, { rejectWithValue }) => {
+    try {
+      return await vehicleService.getVehiclesByVendor(vendorId);
+    } catch (error) {
+      return rejectWithValue(error instanceof Error ? error.message : 'Failed to fetch vendor vehicles');
+    }
+  }
+);
+
+export const updateStatus = createAsyncThunk(
+  'vehicles/updateStatus',
+  async ({ id, status }: { id: string; status: string }, { rejectWithValue }) => {
+    try {
+      return await vehicleService.updateVehicleStatus(id, status);
+    } catch (error) {
+      return rejectWithValue(error instanceof Error ? error.message : 'Failed to update vehicle status');
+    }
+  }
+);
+
+export const uploadVehicleVideos = createAsyncThunk(
+  'vehicles/uploadVideos',
+  async ({ vehicleId, file }: { vehicleId: string; file: File }, { rejectWithValue }) => {
+    try {
+      return await vehicleService.uploadVideos(vehicleId, file);
+    } catch (error) {
+      return rejectWithValue(error instanceof Error ? error.message : 'Failed to upload videos');
+    }
+  }
+);
+
 const vehicleSlice = createSlice({
   name: 'vehicle',
   initialState,
@@ -355,11 +454,76 @@ const vehicleSlice = createSlice({
       state.success = true;
     });
 
+      // Veículos do usuário
+    builder.addCase(fetchUserVehicles.fulfilled, (state, action) => {
+      state.loading = false;
+      state.userVehicles = action.payload;
+    });
+
+    // Estatísticas do usuário
+    builder.addCase(fetchUserVehicleStats.fulfilled, (state, action) => {
+      state.loading = false;
+      state.userStats = action.payload;
+    });
+
+    // Visualizações
+    builder.addCase(fetchVehicleViews.fulfilled, (state, action) => {
+      state.loading = false;
+      state.views = action.payload;
+    });
+
+    // Veículos por vendedor
+    builder.addCase(fetchVehiclesByVendor.fulfilled, (state, action) => {
+      state.loading = false;
+      state.vendorVehicles = action.payload;
+    });
+
+    // Atualizar status
+    builder.addCase(updateStatus.fulfilled, (state, action) => {
+      state.loading = false;
+      state.vehicles = state.vehicles.map(vehicle =>
+        vehicle.id === action.payload.id ? action.payload : vehicle
+      );
+      state.userVehicles = state.userVehicles.map(vehicle =>
+        vehicle.id === action.payload.id ? action.payload : vehicle
+      );
+      if (state.currentVehicle?.id === action.payload.id) {
+        state.currentVehicle = action.payload;
+      }
+      state.success = true;
+    });
+
+    // Registrar visualização
+    builder.addCase(registerVehicleView.fulfilled, (state, action) => {
+      if (state.currentVehicle?.id === action.payload) {
+        state.currentVehicle.visualizacoes = (state.currentVehicle.visualizacoes || 0) + 1;
+      }
+      state.vehicles = state.vehicles.map(vehicle =>
+        vehicle.id === action.payload
+          ? { ...vehicle, visualizacoes: (vehicle.visualizacoes || 0) + 1 }
+          : vehicle
+      );
+    });
+
     // Upload Imagem
     builder.addCase(uploadVehicleImages.fulfilled, (state, action) => {
       state.loading = false;
       state.currentVehicle = action.payload;
       state.vehicles = state.vehicles.map(vehicle =>
+        vehicle.id === action.payload.id ? action.payload : vehicle
+      );
+      state.success = true;
+    });
+
+    
+    // Upload de vídeos
+    builder.addCase(uploadVehicleVideos.fulfilled, (state, action) => {
+      state.loading = false;
+      state.currentVehicle = action.payload;
+      state.vehicles = state.vehicles.map(vehicle =>
+        vehicle.id === action.payload.id ? action.payload : vehicle
+      );
+      state.userVehicles = state.userVehicles.map(vehicle =>
         vehicle.id === action.payload.id ? action.payload : vehicle
       );
       state.success = true;

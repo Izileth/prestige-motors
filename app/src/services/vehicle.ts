@@ -36,7 +36,6 @@ export const vehicleService = {
         return response.data;
     },
 
-
     async createVehicle(data: VehicleCreateInput): Promise<Vehicle> {
         const response = await api.post<Vehicle>('/vehicles', data);
         return response.data;
@@ -49,6 +48,15 @@ export const vehicleService = {
 
     async deleteVehicle(id: string): Promise<void> {
         await api.delete(`/vehicles/${id}`);
+    },
+
+    async registerVehicleView(vehicleId: string): Promise<void> {
+        await api.post(`/vehicles/${vehicleId}/views`);
+    },
+    
+    async getVehicleViews(): Promise<number> {
+        const response = await api.get('/vehicles/me/views');
+        return response.data;
     },
 
     async getFeaturedVehicles(): Promise<Vehicle[]> {
@@ -80,6 +88,33 @@ export const vehicleService = {
         return response.data;
     },
 
+    async getVehicleStats(): Promise<VehicleStats> {
+        const response = await api.get('/vehicles/stats');
+        return response.data;
+    },
+
+    // Novos métodos adicionados
+
+    async getUserVehicles(): Promise<Vehicle[]> {
+        const response = await api.get('/vehicles/me/vehicles');
+        return response.data.data || []; // Acessa a propriedade data
+    },
+
+    async getUserVehicleStats(): Promise<VehicleStats> {
+        const response = await api.get('/vehicles/me/vehicle-stats');
+        return response.data.stats || null;
+    },
+
+    async getVehiclesByVendor(vendorId: string): Promise<Vehicle[]> {
+        const response = await api.get(`/vehicles/vendors/${vendorId}`);
+        return response.data;
+    },
+
+    async updateVehicleStatus(id: string, status: string): Promise<Vehicle> {
+        const response = await api.put(`/vehicles/${id}/status`, { status });
+        return response.data;
+    },
+
     async uploadImages(vehicleId: string, files: File[]): Promise<Vehicle> {
         const formData = new FormData();
         files.forEach(file => formData.append('images', file)); // <-- 'images' deve bater com o nome no multer
@@ -91,7 +126,18 @@ export const vehicleService = {
         });
         return response.data;
     },
-    
+
+    async uploadVideos(vehicleId: string, file: File): Promise<Vehicle> {
+        const formData = new FormData();
+        formData.append('video', file);
+        
+        const response = await api.post(`/vehicles/${vehicleId}/videos`, formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        });
+        return response.data;
+    },
 
     async deleteVehicleImage(vehicleId: string, imageUrl: string): Promise<void> {
         await api.delete(`/vehicles/${vehicleId}/images`, {
@@ -99,10 +145,7 @@ export const vehicleService = {
         });
     },
 
-    async getVehicleStats(): Promise<VehicleStats> {
-        const response = await api.get('/vehicles/stats');
-        return response.data;
-    }
+    
 };
 
 export default vehicleService;

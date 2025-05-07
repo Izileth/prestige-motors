@@ -47,7 +47,7 @@ const VehicleCard = ({ vehicle, onFavoriteToggle, onClick }: VehicleCardProps) =
         <CardHeader className="relative p-0">
             {vehicle.imagens && vehicle.imagens.length > 0 ? (
             <img
-                src={vehicle.imagens[0]}
+                src={vehicle.imagens[0].url}
                 alt={vehicle.modelo}
                 className="w-full h-48 object-cover rounded-t-lg"
             />

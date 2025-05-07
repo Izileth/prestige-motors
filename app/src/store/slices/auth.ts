@@ -44,7 +44,7 @@ interface RegisterData {
     senha: string;
     telefone?: string;
     cpf?: string;
-    dataNascimento?: Date;
+    dataNascimento?: string;
 }
 
 interface ResetPasswordData {
