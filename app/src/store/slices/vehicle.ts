@@ -49,8 +49,16 @@ export interface Vehicle {
     email: string;
     telefone: string;
   };
-  videos: string[];
+  videos: VehicleVideo[];
   especificacoes: Record<string, unknown> | null;
+  localizacao: {
+    cidade: string;
+    estado: string;
+  } | null;
+  
+  // Novas propriedades para avaliações
+  avaliacoes: Review[];
+  reviewStats: ReviewStats;
 }
 
 export interface VehicleImage {
@@ -61,13 +69,27 @@ export interface VehicleImage {
   publicId?: string;
 }
 
+export interface VehicleVideo {
+  id: string;
+  url: string;
+}
 export interface Review {
   id: string;
   vehicleId: string;
   userId: string;
   rating: number;
-  comentario?: string;
+  comentario: string | null;
   createdAt: string;
+  updatedAt: string;
+  user: {
+    nome: string;
+    avatar: string | null;
+  };
+}
+
+export interface ReviewStats {
+  averageRating: number;
+  totalReviews: number;
 }
 
 export interface VehicleStats {
@@ -413,12 +435,7 @@ const vehicleSlice = createSlice({
       if (!Array.isArray(state.favorites)) {
         state.favorites = [];
       }
-    
-      // Evita duplicatas
-      if (!state.favorites.some(v => v.id === action.payload.id)) {
-        state.favorites.push(action.payload);
-      }
-    
+      
       // Atualiza o status nos veículos
       state.vehicles = state.vehicles.map(vehicle =>
         vehicle.id === action.payload.id 
@@ -434,12 +451,18 @@ const vehicleSlice = createSlice({
 
     builder.addCase(removeFavorite.fulfilled, (state, action) => {
       state.loading = false;
-      state.favorites = state.favorites.filter(vehicle => vehicle.id !== action.payload);
+      
+      // Garante que favorites seja um array antes de filtrar
+      if (Array.isArray(state.favorites)) {
+        state.favorites = state.favorites.filter(vehicle => vehicle.id !== action.payload);
+      }
+      
       state.vehicles = state.vehicles.map(vehicle =>
         vehicle.id === action.payload ? { ...vehicle, isFavorite: false } : vehicle
       );
+      
       if (state.currentVehicle?.id === action.payload) {
-        state.currentVehicle = { ...state.currentVehicle, isFavorite: false };
+        state.currentVehicle.isFavorite = false;
       }
     });
 

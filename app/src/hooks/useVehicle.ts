@@ -112,6 +112,8 @@ const useVehicle = () => {
     // Buscar avaliações de um veículo
     fetchVehicleReviews: (vehicleId: string) => 
       dispatch(fetchVehicleReviews(vehicleId)),
+
+    
     
     // Criar nova avaliação
     createReview: (vehicleId: string, data: ReviewCreateInput) => 

@@ -64,18 +64,35 @@ export const vehicleService = {
         return response.data;
     },
 
-    async addFavorite(vehicleId: string): Promise<Vehicle> {
+
+    async addFavorite(vehicleId: string): Promise<{id: string}> {
         const response = await api.post(`/vehicles/${vehicleId}/favorites`);
-        return response.data; 
+        return { id: vehicleId };
     },
 
-    async removeFavorite(vehicleId: string): Promise<void> {
+    async removeFavorite(vehicleId: string): Promise<{id: string}> {
         await api.delete(`/vehicles/${vehicleId}/favorites`);
+        return { id: vehicleId };
     },
 
     async getUserFavorites(): Promise<Vehicle[]> {
+        console.log('Fetching favorites...');
         const response = await api.get('/vehicles/me/favorites');
-        return response.data;
+
+        console.log('Raw response:', response.data);
+        
+        // Verifica se a resposta tem a estrutura esperada
+        if (response.data && Array.isArray(response.data.data)) {
+          // Mapeia para extrair apenas os veículos e adiciona isFavorite: true
+            return response.data.data.map((item: { vehicle: Vehicle }) => ({
+                ...item.vehicle,
+                isFavorite: true // Garante que o flag esteja marcado
+            }));
+        }
+
+        console.log('Processed favorites:', response);
+        
+        return [];
     },
 
     async createReview(vehicleId: string, data: ReviewCreateInput): Promise<Review> {
