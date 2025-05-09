@@ -293,7 +293,7 @@ const VehicleDetailsPage = () => {
             <span className="text-gray-300 dark:text-gray-700">•</span>
             <div className="flex items-center gap-1">
               <Gauge size={16} />
-              <span>{currentVehicle.quilometragem.toLocaleString("pt-BR")} km</span>
+              <span>{currentVehicle?.quilometragem?.toLocaleString("pt-BR")} km</span>
             </div>
             <span className="text-gray-300 dark:text-gray-700">•</span>
             <div className="flex items-center gap-1">
@@ -462,7 +462,7 @@ const VehicleDetailsPage = () => {
                             <span>Quilometragem</span>
                           </div>
                           <span className="font-medium text-gray-900 dark:text-gray-100">
-                            {currentVehicle.quilometragem.toLocaleString("pt-BR")} km
+                            {currentVehicle?.quilometragem?.toLocaleString("pt-BR")} km
                           </span>
                         </div>
                         <div className="flex items-center justify-between py-2 border-b border-gray-100 dark:border-gray-800">
@@ -587,7 +587,7 @@ const VehicleDetailsPage = () => {
                                   <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
                                     <h4 className="font-medium text-gray-900 dark:text-gray-100">{review.user.nome}</h4>
                                     <span className="text-sm text-gray-500 dark:text-gray-400">
-                                      {new Date(review.createdAt).toLocaleDateString("pt-BR")}
+                                      {new Date(review.createdAt)?.toLocaleDateString("pt-BR")}
                                     </span>
                                   </div>
                                   <div className="flex items-center gap-1 mt-1">
@@ -621,15 +621,15 @@ const VehicleDetailsPage = () => {
                       </div>
                     )}
 
-                    <Card className="border-0 shadow-sm bg-white dark:bg-gray-900">
+                    <Card className="border-0 shadow-none bg-white dark:bg-gray-900">
                       <CardHeader className="font-medium text-lg text-gray-900 dark:text-gray-100">
                         Deixe sua avaliação
                       </CardHeader>
-                      <CardContent>
-                        <form onSubmit={handleReviewSubmit} className="space-y-4">
-                          <div>
-                            <label className="block mb-2 text-gray-700 dark:text-gray-300">Sua avaliação</label>
-                            <div className="flex items-center gap-2">
+                      <CardContent className="rounded-none shadow-none">
+                        <form onSubmit={handleReviewSubmit} className="space-y-4 rounded-none shadow-none">
+                          <div className="rounded-none">
+                            <label className="block mb-2 font-light text-gray-700 dark:text-gray-300">Sua avaliação</label>
+                            <div className="flex items-center gap-1">
                               {[1, 2, 3, 4, 5].map((star) => (
                                 <button
                                   key={star}
@@ -638,7 +638,7 @@ const VehicleDetailsPage = () => {
                                   className="focus:outline-none transition-transform hover:scale-110"
                                 >
                                   <Star
-                                    size={24}
+                                    size={12}
                                     className={
                                       star <= newReview.rating
                                         ? "fill-black text-black dark:fill-white dark:text-white"
@@ -650,7 +650,7 @@ const VehicleDetailsPage = () => {
                             </div>
                           </div>
                           <div>
-                            <label htmlFor="comment" className="block mb-2 text-gray-700 dark:text-gray-300">
+                            <label htmlFor="comment" className="block mb-2 font-light text-gray-700 dark:text-gray-300">
                               Comentário (opcional)
                             </label>
                             <Textarea

@@ -8,11 +8,13 @@ import { Input } from "~/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "~/components/ui/select"
 import { Slider } from "~/components/ui/slider"
 import { Badge } from "~/components/ui/badge"
-import { Heart, ChevronRight, Filter, Zap, ShieldCheck, Calendar, Gauge, MapPin, X, Search } from "lucide-react"
+import { Heart, ChevronRight, Filter, Zap, ShieldCheck, Calendar, Gauge, MapPin, X, Search, AlertTriangle } from "lucide-react"
 import useVehicle from "~/src/hooks/useVehicle"
 import type { Vehicle } from "~/src/store/slices/vehicle"
 import type { VehicleSearchParams } from "~/src/services/vehicle"
 import { motion, AnimatePresence } from "framer-motion"
+import { Carousel } from "~/src/_components/common/_carousel/carousel"
+import { FeaturedCars } from "~/src/data/static/carousel"
 
 const VehicleListingPage = () => {
   const {
@@ -20,7 +22,6 @@ const VehicleListingPage = () => {
     loading,
     error,
     fetchVehicles,
-    fetchFeaturedVehicles,
     addFavorite,
     removeFavorite,
     fetchUserFavorites,
@@ -33,14 +34,20 @@ const VehicleListingPage = () => {
   const filtersRef = useRef<HTMLDivElement>(null)
   const navigate = useNavigate()
 
+  // Effect for fetching favorites only once when component mounts
+  useEffect(() => {
+    fetchUserFavorites()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  // Effect for fetching vehicles when search params change
   useEffect(() => {
     const timer = setTimeout(() => {
       fetchVehicles(searchParams)
     }, 500)
 
-    fetchUserFavorites()
-
     return () => clearTimeout(timer)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams])
 
   useEffect(() => {
@@ -122,6 +129,21 @@ const VehicleListingPage = () => {
     return transmissionTypes[type] || type
   }
 
+  const handleFilterChange = (field: keyof VehicleSearchParams, value: string) => {
+    // Se o valor for "All", removemos o filtro
+    if (value === "All") {
+      const newParams = { ...searchParams }
+      delete newParams[field]
+      setSearchParams(newParams)
+    } else {
+      setSearchParams({ ...searchParams, [field]: value })
+    }
+  }
+
+  const retryFetch = () => {
+    fetchVehicles(searchParams)
+  }
+
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950 transition-colors duration-300">
       <div
@@ -191,8 +213,8 @@ const VehicleListingPage = () => {
                 <div>
                   <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">Combustível</label>
                   <Select
-                    value={searchParams.combustivel || ""}
-                    onValueChange={(value) => setSearchParams({ ...searchParams, combustivel: value })}
+                    value={searchParams.combustivel || "All"}
+                    onValueChange={(value) => handleFilterChange("combustivel" as keyof VehicleSearchParams, value)}
                   >
                     <SelectTrigger className="border-gray-200 dark:border-gray-800 focus:ring-gray-900 dark:focus:ring-gray-400">
                       <SelectValue placeholder="Todos" />
@@ -213,8 +235,8 @@ const VehicleListingPage = () => {
                 <div>
                   <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">Câmbio</label>
                   <Select
-                    value={searchParams.cambio || ""}
-                    onValueChange={(value) => setSearchParams({ ...searchParams, cambio: value })}
+                    value={searchParams.cambio || "All"}
+                    onValueChange={(value) => handleFilterChange("cambio" as keyof VehicleSearchParams, value)}
                   >
                     <SelectTrigger className="border-gray-200 dark:border-gray-800 focus:ring-gray-900 dark:focus:ring-gray-400">
                       <SelectValue placeholder="Todos" />
@@ -232,8 +254,8 @@ const VehicleListingPage = () => {
                 <div>
                   <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">Categoria</label>
                   <Select
-                    value={searchParams.categoria || ""}
-                    onValueChange={(value) => setSearchParams({ ...searchParams, categoria: value })}
+                    value={searchParams.categoria || "All"}
+                    onValueChange={(value) => handleFilterChange("categoria" as keyof VehicleSearchParams, value)}
                   >
                     <SelectTrigger className="border-gray-200 dark:border-gray-800 focus:ring-gray-900 dark:focus:ring-gray-400">
                       <SelectValue placeholder="Todos" />
@@ -257,40 +279,59 @@ const VehicleListingPage = () => {
         )}
       </AnimatePresence>
 
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-0 py-0">
         <div className="mb-8">
-          <motion.h1
+        <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
             className="text-3xl font-medium mb-2 text-gray-900 dark:text-gray-100"
           >
-            Encontre o veículo perfeito
-          </motion.h1>
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.1 }}
-            className="text-gray-600 dark:text-gray-400"
+            <Carousel items={FeaturedCars} className="w-full max-w-full"></Carousel>
+          </motion.div>
+          <motion.div
+             initial={{ opacity: 0, y: 20 }}
+             animate={{ opacity: 1, y: 0 }}
+             transition={{ duration: 0.5 }}
+             className="text-3xl font-medium mb-2 bg-zinc-100 h-18 text-gray-900 dark:text-gray-100"
           >
-            Explore nossa seleção de veículos premium e encontre o que melhor se adapta às suas necessidades.
-          </motion.p>
+          </motion.div>
         </div>
 
         {loading && (
-          <div className="flex justify-center items-center py-20">
-            <div className="animate-pulse flex flex-col items-center">
-              <div className="h-12 w-12 rounded-full bg-gray-200 dark:bg-gray-800 mb-4"></div>
-              <div className="h-4 w-32 bg-gray-200 dark:bg-gray-800 rounded"></div>
-            </div>
+          <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-4 w-full p-4">
+            {Array.from({ length: 6 }).map((_, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.3, delay: index * 0.1 }}
+                className="flex h-96 flex-col items-start bg-gray-200 dark:bg-zinc-400 rounded-none shadow-md p-6 animate-pulse"
+              >
+                <div className="h-36 w-full bg-gray-300 dark:bg-zinc-300 rounded-none mb-4"></div>
+                <div className="h-6 w-3/4 bg-gray-300 dark:bg-zinc-300 rounded mb-2"></div>
+                <div className="h-4 w-1/2 bg-gray-200 dark:bg-zinc-300 rounded"></div>
+              </motion.div>
+            ))}
           </div>
         )}
-
+        
         {error && (
-          <div className="text-center py-12 px-4 bg-gray-50 dark:bg-gray-900 rounded-lg border border-gray-100 dark:border-gray-800">
-            <div className="text-red-500 mb-2">Erro ao carregar veículos</div>
-            <p className="text-gray-600 dark:text-gray-400 text-sm">{error}</p>
-          </div>
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-center py-12 px-4 bg-gray-50 dark:bg-gray-900 rounded-none border border-gray-100 dark:border-gray-800 shadow-lg"
+          >
+            <div className="flex flex-col items-center gap-1">
+              <p className="text-gray-600 dark:text-gray-800  text-lg font-light mb-8">Falha ao carregar veículos</p>
+              <button 
+                className="px-2 py-2  text-sm bg-transparent text-zinc-950 font-light rounded-none border-1 border-zinc-950 hover:text-zinc-800 shadow-none"
+                onClick={retryFetch}
+              >
+                Tentar novamente
+              </button>
+            </div>
+          </motion.div>
         )}
 
         {!loading && !error && (
@@ -299,7 +340,7 @@ const VehicleListingPage = () => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.5, delay: 0.2 }}
-              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8"
+              className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8 px-4"
             >
               {Array.isArray(vehicles) &&
                 vehicles.map((vehicle, index) => (

@@ -9,42 +9,42 @@ import { ptBR } from "date-fns/locale"
 import type { Address } from "~/src/store/slices/user"
 import { motion, AnimatePresence } from "framer-motion"
 import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-  PieChart,
-  Pie,
-  Cell,
-  BarChart,
-  Bar,
-  ComposedChart,
-  AreaChart,
-  Area,
+    LineChart,
+    Line,
+    XAxis,
+    YAxis,
+    CartesianGrid,
+    Tooltip,
+    Legend,
+    ResponsiveContainer,
+    PieChart,
+    Pie,
+    Cell,
+    BarChart,
+    Bar,
+    ComposedChart,
+    AreaChart,
+    Area,
 } from "recharts"
 import {
-  Check,
-  AlertCircle,
-  Car,
-  User,
-  ShoppingCart,
-  Trash2,
-  Heart,
-  Star,
-  FileText,
-  LogOut,
-  Key,
-  MapPin,
-  Camera,
-  ChevronRight,
-  BarChart2,
-  Plus,
-  X,
-  Edit,
+    Check,
+    AlertCircle,
+    Car,
+    User,
+    ShoppingCart,
+    Trash2,
+    Heart,
+    Star,
+    FileText,
+    LogOut,
+    Key,
+    MapPin,
+    Camera,
+    ChevronRight,
+    BarChart2,
+    Plus,
+    X,
+    Edit,
 } from "lucide-react"
 
 // Importando componentes do shadcn/ui
@@ -57,13 +57,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs"
 import { Alert, AlertDescription, AlertTitle } from "~/components/ui/alert"
 import { Badge } from "~/components/ui/badge"
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
 } from "~/components/ui/dialog"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "~/components/ui/select"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "~/components/ui/table"
@@ -74,18 +74,18 @@ import type { UserUpdateData } from "~/src/services/user"
 const COLORS = ["#000000", "#333333", "#666666", "#999999", "#CCCCCC", "#E5E5E5", "#F5F5F5"]
 
 const fadeIn = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.4 } },
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.4 } },
 }
 
 const staggerContainer = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.1,
+    hidden: { opacity: 0 },
+    visible: {
+        opacity: 1,
+        transition: {
+        staggerChildren: 0.1,
+        },
     },
-  },
 }
 
 export default function Dashboard() {

@@ -56,7 +56,7 @@ export interface Vehicle {
     estado: string;
   } | null;
   
-  // Novas propriedades para avaliações
+  
   avaliacoes: Review[];
   reviewStats: ReviewStats;
 }

@@ -139,37 +139,23 @@ type CarouselProps = {
                 <span className="sr-only">Next slide</span>
                 </Button>
             </div>
-            </div>
-
-            <div className="mt-4 flex justify-center gap-2">
+            <div className="mt-4 z-10 flex justify-center gap-2  absolute bottom-0 mb-12 left-0 right-0">
             {items.map((_, i) => (
                 <button
                 key={i}
                 onClick={() => setPage([i, i > page ? 1 : -1])}
                 className={cn(
                     "h-1.5 rounded-full transition-all duration-300",
-                    i === page ? "w-8 bg-neutral-900" : "w-4 bg-neutral-300",
+                    i === page ? "w-8 bg-neutral-50" : "w-4 bg-neutral-300",
                 )}
                 aria-label={`Go to slide ${i + 1}`}
                 />
             ))}
             </div>
+            </div>
+          
         </MotionConfig>
-
-        <motion.div
-            variants={itemVariants}
-            initial="hidden"
-            animate="visible"
-            className="mx-auto max-w-2xl space-y-6 text-center mt-8"
-        >
-            <p className="text-neutral-600">These are just a few of our recent releases.</p>
-            <Button asChild className="group inline-flex items-center gap-2 bg-transparent text-zinc-950 hover:bg-transparent hover:text-zinc-500">
-            <a href="/vehicles">
-                <span>View all products</span>
-                <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
-            </a>
-            </Button>
-        </motion.div>
+   
         </div>
     )
 }

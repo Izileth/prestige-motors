@@ -17,8 +17,35 @@ export interface VehicleSearchParams {
 }
 
 // Tipo para criação/atualização de veículo (sem o ID e campos gerados pelo servidor)
-export type VehicleCreateInput = Omit<Vehicle, 'id' | 'imagens' | 'isFavorite'>;
+
 export type VehicleUpdateInput = Partial<VehicleCreateInput>;
+
+export interface VehicleCreateInput {
+    marca: string;
+    modelo: string;
+    anoFabricacao: number;
+    anoModelo: number;
+    preco: number;
+    quilometragem: number;
+    tipoCombustivel: 'GASOLINA' | 'ETANOL' | 'FLEX' | 'DIESEL' | 'ELETRICO' | 'HIBRIDO' | 'GNV';
+    cambio: 'MANUAL' | 'AUTOMATICO' | 'SEMI_AUTOMATICO' | 'CVT';
+    cor: string;
+    portas: number;
+    finalPlaca?: number;
+    carroceria: 'HATCH' | 'SEDAN' | 'SUV' | 'PICAPE' | 'COUPE' | 'CONVERSIVEL' | 'PERUA' | 'MINIVAN' | 'VAN' | 'BUGGY' | 'OFFROAD';
+    potencia?: number;
+    motor?: string;
+    categoria: 'HYPERCAR' | 'SUPERCAR' | 'SPORTS_CAR' | 'CLASSIC_MUSCLE' | 'MODERN_MUSCLE' | 'RETRO_SUPER' | 'DRIFT_CAR' | 'TRACK_TOY' | 'OFFROAD' | 'BUGGY' | 'PICKUP_4X4' | 'SUV' | 'HOT_HATCH' | 'SALOON' | 'GT' | 'RALLY' | 'CONCEPT';
+    classe: 'D' | 'C' | 'B' | 'A' | 'S1' | 'S2' | 'X';
+    destaque?: boolean;
+    seloOriginal?: boolean;
+    aceitaTroca?: boolean;
+    parcelamento?: number;
+    localizacaoId?: string;
+    descricao?: string;
+    precoPromocional?: number;
+    status?: 'DISPONIVEL' | 'VENDIDO' | 'RESERVADO'; // Opcional (pode ter um valor padrão no backend)
+}
 
 // Tipo para criação de review (sem campos gerados pelo servidor)
 export type ReviewCreateInput = Pick<Review, 'rating' | 'comentario'>;
@@ -156,11 +183,13 @@ export const vehicleService = {
         return response.data;
     },
 
-    async deleteVehicleImage(vehicleId: string, imageUrl: string): Promise<void> {
-        await api.delete(`/vehicles/${vehicleId}/images`, {
-          data: { imageUrl } // Envia a URL da imagem a ser removida no corpo da requisição
-        });
-    },
+    async deleteVehicleImage(vehicleId: string, imageId: string): Promise<void> {
+    // Enviar o ID da imagem com um nome de parâmetro mais claro
+    await api.delete(`/vehicles/${vehicleId}/images`, {
+        data: { imageId } // Usar imageId em vez de imageUrl para maior clareza
+    });
+}
+
 
     
 };
