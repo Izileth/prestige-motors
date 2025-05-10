@@ -1,5 +1,4 @@
 import { useAppDispatch, useAppSelector } from '../store/hooks';
-import { useState } from 'react';
 import { 
   fetchVehicles,
   fetchVehicleById,
@@ -26,14 +25,9 @@ import {
   setCurrentVehicle
 } from '~/src/store/slices/vehicle';
 
-import type { Vehicle } from '~/src/store/slices/vehicle';
 
-import type {
-    VehicleSearchParams,
-    VehicleCreateInput,
-    VehicleUpdateInput,
-    ReviewCreateInput
-} from '~/src/services/vehicle';
+import type { Vehicle, VehicleCreateInput, VehicleSearchParams } from '../types/vehicle';
+import type { VehicleUpdateInput, ReviewCreateInput } from '../types/inputs';
 
 /**
  * Hook personalizado para gerenciar operações relacionadas a veículos
@@ -45,8 +39,16 @@ const useVehicle = () => {
   return {
     ...vehicleState,
     // Buscar veículos com parâmetros tipados
-    fetchVehicles: (params?: VehicleSearchParams) => 
-      dispatch(fetchVehicles(params || {})),
+
+    fetchVehicles: (params?: VehicleSearchParams) => {
+      const normalizedParams = params
+        ? Object.fromEntries(
+            Object.entries(params).filter(([_, v]) => v !== undefined)
+          )
+        : {};
+      
+      return dispatch(fetchVehicles(normalizedParams));
+    },
     
     // Buscar veículos do usuário atual
     fetchUserVehicles: () => 

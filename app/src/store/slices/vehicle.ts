@@ -1,103 +1,12 @@
 import { createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
 
-import vehicleService, { 
-} from '~/src/services/vehicle';
+import vehicleService from '~/src/services/vehicle';
 
-import type {
-    VehicleSearchParams, 
-    VehicleCreateInput, 
-    VehicleUpdateInput, 
-    ReviewCreateInput 
-} from '~/src/services/vehicle'
+import type { ReviewCreateInput, VehicleUpdateInput } from '~/src/types/inputs';
 
-export interface Vehicle {
-  id: string;
-  marca: string;
-  modelo: string;
-  anoFabricacao: number;
-  anoModelo: number;
-  preco: number;
-  precoPromocional?: number;
-  descricao?: string;
-  quilometragem: number;
-  tipoCombustivel: 'GASOLINA' | 'ETANOL' | 'FLEX' | 'DIESEL' | 'ELETRICO' | 'HIBRIDO' | 'GNV';
-  cambio: 'MANUAL' | 'AUTOMATICO' | 'SEMI_AUTOMATICO' | 'CVT';
-  cor: string;
-  portas: number;
-  finalPlaca?: number;
-  carroceria: 'HATCH' | 'SEDAN' | 'SUV' | 'PICAPE' | 'COUPE' | 'CONVERSIVEL' | 'PERUA' | 'MINIVAN' | 'VAN' | 'BUGGY' | 'OFFROAD';
-  potencia?: number;
-  motor?: string;
-  categoria: 'HYPERCAR' | 'SUPERCAR' | 'SPORTS_CAR' | 'CLASSIC_MUSCLE' | 'MODERN_MUSCLE' | 'RETRO_SUPER' | 'DRIFT_CAR' | 'TRACK_TOY' | 'OFFROAD' | 'BUGGY' | 'PICKUP_4X4' | 'SUV' | 'HOT_HATCH' | 'SALOON' | 'GT' | 'RALLY' | 'CONCEPT';
-  classe: 'D' | 'C' | 'B' | 'A' | 'S1' | 'S2' | 'X';
-  destaque?: boolean;
-  seloOriginal?: boolean;
-  aceitaTroca?: boolean;
-  parcelamento?: number;
-  localizacaoId?: string;
-  imagens: VehicleImage[];
-  isFavorite?: boolean;
-  status: 'DISPONIVEL' | 'VENDIDO' | 'RESERVADO';
-  createdAt: string;
-  updatedAt: string;
-  visualizacoes: number;
-  vendedorId: string;
-  vendedor: {
-    id: string;
-    nome: string;
-    email: string;
-    telefone: string;
-  };
-  videos: VehicleVideo[];
-  especificacoes: Record<string, unknown> | null;
-  localizacao: {
-    cidade: string;
-    estado: string;
-  } | null;
-  
-  
-  avaliacoes: Review[];
-  reviewStats: ReviewStats;
-}
-
-export interface VehicleImage {
-  id: string;
-  url: string;
-  isMain?: boolean;
-  ordem?: number;
-  publicId?: string;
-}
-
-export interface VehicleVideo {
-  id: string;
-  url: string;
-}
-export interface Review {
-  id: string;
-  vehicleId: string;
-  userId: string;
-  rating: number;
-  comentario: string | null;
-  createdAt: string;
-  updatedAt: string;
-  user: {
-    nome: string;
-    avatar: string | null;
-  };
-}
-
-export interface ReviewStats {
-  averageRating: number;
-  totalReviews: number;
-}
-
-export interface VehicleStats {
-  totalVehicles: number;
-  byFuelType: Record<string, number>;
-  byCategory: Record<string, number>;
-  averagePrice: number;
-}
+import type { Vehicle, VehicleImage, VehicleStats, VehicleVideo, VehicleCreateInput, VehicleSearchParams } from '~/src/types/vehicle';
+import type { Review, ReviewStats } from '~/src/types/reviews';
 
 export interface VehicleState {
   vehicles: Vehicle[];
@@ -132,11 +41,14 @@ const initialState: VehicleState = {
 };
 
 // Thunks assíncronos
+
 export const fetchVehicles = createAsyncThunk(
   'vehicles/fetchAll',
   async (params: VehicleSearchParams = {}, { rejectWithValue }) => {
     try {
-      return await vehicleService.getVehicles(params);
+      // Garante que params seja um objeto válido
+      const requestParams = params || {};
+      return await vehicleService.getVehicles(requestParams);
     } catch (error) {
       return rejectWithValue(error instanceof Error ? error.message : 'Failed to fetch vehicles');
     }

@@ -12,8 +12,9 @@ import "./app.css";
 
 import { ReduxProviders } from "./providers";
 
-
+import { Banner } from "./src/_components/layout/_banner/banner";
 import Navigation from './src/_components/layout/_navbar/navbar';
+import { Baseboard } from "./src/_components/layout/_baseboard/baseboard";
 import Footer from './src/_components/layout/_footer/footer';
 
 
@@ -64,8 +65,10 @@ export function Layout({ children }: { children: React.ReactNode }) {
 export default function App() {
   return (
     <ReduxProviders>
+      <Banner/>
       <Navigation/>
         <Outlet />
+      <Baseboard/>  
       <Footer/>
     </ReduxProviders>
   );

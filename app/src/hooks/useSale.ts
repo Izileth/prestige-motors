@@ -1,7 +1,7 @@
 import { useAppDispatch, useAppSelector } from '~/src/store/hooks';
 import * as saleActions from '~/src/store/slices/sales';
-import type { SaleData, UpdateSaleData } from '../services/sale';
-import type { Sale } from '../store/slices/sales';
+
+import type { SaleData, UpdateSaleData, Sale } from '../types/sale';
 
 const useSale = () => {
     const dispatch = useAppDispatch();

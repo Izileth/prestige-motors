@@ -1,60 +1,8 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
 import * as userService from '~/src/services/user';
-import type { AddressData, UserUpdateData } from '~/src/services/user';
-
-// Interfaces de tipo
-export interface User {
-  id: string;
-  nome: string;
-  email: string;
-  role: string;
-  avatar: string | null;
-  telefone: string | null;
-  cpf: string | null;
-  dataNascimento: string | null;
-}
-
-export interface Address {
-  id: string,
-  cep: string,
-  logradouro: string,
-  numero: string,
-  complemento?: string,
-  bairro: string,
-  cidade:string,
-  estado: string,
-  pais?: string
-  userId: string;
-}
-
-export interface VehicleStats {
-  _sum: {
-    preco: number | null;
-  };
-  _avg: {
-    preco: number | null;
-    anoFabricacao: number | null;
-    anoModelo: number | null;
-  };
-  _min: {
-    preco: number | null;
-  };
-  _max: {
-    preco: number | null;
-  };
-}
-
-
-export interface UserStats {
-  totalVehicles: number;
-  valorTotalInventario: number;
-  precoMedio: number;
-  anoFabricacaoMedio: number;
-  anoModeloMedio: number;
-  precoMinimo: number;
-  precoMaximo: number;
-}
+import type {Address, AddressData } from '~/src/types/adress';
+import type {User, UserUpdateData, UserStats } from '~/src/types/user';
 
 export interface UserState {
   currentUser: User | null;

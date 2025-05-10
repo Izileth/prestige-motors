@@ -6,7 +6,7 @@ import useVehicle from "~/src/hooks/useVehicle"
 import useSale from "~/src/hooks/useSale"
 import { format } from "date-fns"
 import { ptBR } from "date-fns/locale"
-import type { Address } from "~/src/store/slices/user"
+import type { Address } from "~/src/types/adress"
 import { motion, AnimatePresence } from "framer-motion"
 import {
     LineChart,
@@ -68,7 +68,8 @@ import {
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "~/components/ui/select"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "~/components/ui/table"
 
-import type { UserUpdateData } from "~/src/services/user"
+
+import type { UserUpdateData } from "~/src/types/user"
 
 // Define o esquema de cores para os gráficos
 const COLORS = ["#000000", "#333333", "#666666", "#999999", "#CCCCCC", "#E5E5E5", "#F5F5F5"]

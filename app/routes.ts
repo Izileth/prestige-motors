@@ -15,6 +15,10 @@ export default [
     route("vehicles/:id", "routes/_vehicle/_id/vehicleId.tsx"),
     route("vehicles/create", "routes/_vehicle/_create/create.tsx"),
     route("vehicles/update/:id", "routes/_vehicle/_update/update.tsx"),
+    
+    route("vehicles/category", "routes/_vehicle/_category/category.tsx"),
+    
+    route("vehicles/negociations", "routes/_vehicle/_negociation/negociation.tsx"),
 
     
 ] satisfies RouteConfig;

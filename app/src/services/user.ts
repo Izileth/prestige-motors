@@ -1,38 +1,7 @@
 import api from './api';
+import type { UserUpdateData, UserStats } from '../types/user';
+import type { AddressData } from '../types/adress';
 
-export interface UserUpdateData {
-    nome?: string;
-    email?: string;
-    role?: string;
-    avatar?: string | null;
-    telefone?: string | null;
-    cpf?: string | null;
-    dataNascimento?: string | null;
-    senhaAtual?: string;
-    senha?: string;
-}
-
-export interface UserStats {
-    totalVehicles: number;
-    valorTotalInventario: number;
-    precoMedio: number;
-    anoFabricacaoMedio: number;
-    anoModeloMedio: number;
-    precoMinimo: number;
-    precoMaximo: number;
-}
-
-
-export interface AddressData {
-    cep: string,
-    logradouro: string,
-    numero: string,
-    complemento?: string,
-    bairro: string,
-    cidade: string,
-    estado: string,
-    pais?: string
-}
 
 export const userService = {
     async getUsers() {

@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
-import type { Vehicle } from '~/src/store/slices/vehicle';
-import type { VehicleSearchParams } from '../services/vehicle';
-
+import type { Vehicle } from '../types/vehicle';
+import type { VehicleSearchParams } from '../types/vehicle';
 export const useVehicleFilters = (initialVehicles: Vehicle[] = []) => {
     const [allVehicles, setAllVehicles] = useState<Vehicle[]>(initialVehicles);
     const [filteredVehicles, setFilteredVehicles] = useState<Vehicle[]>(initialVehicles);

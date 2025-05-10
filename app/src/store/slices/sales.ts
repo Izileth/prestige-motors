@@ -1,67 +1,7 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
 import { saleService } from '~/src/services/sale';
-import type { SaleData, UpdateSaleData } from '~/src/services/sale';
-
-export interface Sale {
-  id: string;
-  vehicleId: string;
-  compradorId: string;
-  vendedorId: string;
-  precoVenda: number;
-  formaPagamento: string;
-  parcelas?: number;
-  observacoes?: string;
-  dataVenda: string;
-  status: 'PENDENTE' | 'CONCLUIDA' | 'CANCELADA';
-  vehicle?: {
-    marca: string;
-    modelo: string;
-    anoFabricacao: number;
-    imagem?: string;
-  };
-  comprador?: {
-    nome: string;
-    email: string;
-    avatar?: string;
-  };
-  vendedor?: {
-    nome: string;
-    email: string;
-  };
-}
-
-
-export interface SaleStats {
-  totalSales?: number;
-  totalRevenue?: number;
-  averageSalePrice?: number;
-  byPaymentMethod: Record<string, { 
-    count: number;
-    total: number;
-  }>;
-  byStatus: Record<string, {
-    count: number;
-    total: number;
-  }>;
-  monthlySales: Array<{
-    month: string;
-    count: number;
-    total: number;
-    average?: number;
-  }>;
-  topVehicles?: Array<{
-    vehicleId: string;
-    model: string;
-    brand: string;
-    salesCount: number;
-    totalRevenue?: number;
-  }>;
-  salesTrend?: {
-    labels: string[];
-    data: number[];
-  };
-}
+import type { Sale, SaleData, SaleStats, UpdateSaleData } from '~/src/types/sale';
 
 export interface SaleState {
   sales: Sale[];

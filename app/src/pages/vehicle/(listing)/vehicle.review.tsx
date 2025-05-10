@@ -10,8 +10,8 @@ import { Slider } from "~/components/ui/slider"
 import { Badge } from "~/components/ui/badge"
 import { Heart, ChevronRight, Filter, Zap, ShieldCheck, Calendar, Gauge, MapPin, X, Search, AlertTriangle } from "lucide-react"
 import useVehicle from "~/src/hooks/useVehicle"
-import type { Vehicle } from "~/src/store/slices/vehicle"
-import type { VehicleSearchParams } from "~/src/services/vehicle"
+import type { Vehicle } from "~/src/types/vehicle"
+import type { VehicleSearchParams } from "~/src/types/vehicle"
 import { motion, AnimatePresence } from "framer-motion"
 import { Carousel } from "~/src/_components/common/_carousel/carousel"
 import { FeaturedCars } from "~/src/data/static/carousel"
@@ -306,11 +306,11 @@ const VehicleListingPage = () => {
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.3, delay: index * 0.1 }}
-                className="flex h-96 flex-col items-start bg-gray-200 dark:bg-zinc-400 rounded-none shadow-md p-6 animate-pulse"
+                className="flex h-96 flex-col items-start bg-zinc-50 shadow-none dark:bg-zinc-400 rounded-none  p-6 animate-pulse"
               >
-                <div className="h-36 w-full bg-gray-300 dark:bg-zinc-300 rounded-none mb-4"></div>
-                <div className="h-6 w-3/4 bg-gray-300 dark:bg-zinc-300 rounded mb-2"></div>
-                <div className="h-4 w-1/2 bg-gray-200 dark:bg-zinc-300 rounded"></div>
+                <div className="h-44 w-full bg-zinc-200 dark:bg-zinc-300 rounded-none mb-4"></div>
+                <div className="h-6 w-3/4 bg-zinc-200 dark:bg-zinc-300 rounded mb-2"></div>
+                <div className="h-4 w-1/2 bg-zinc-200 dark:bg-zinc-300 rounded"></div>
               </motion.div>
             ))}
           </div>
@@ -340,7 +340,7 @@ const VehicleListingPage = () => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.5, delay: 0.2 }}
-              className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8 px-4"
+              className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 mb-8 px-2 sm:px-4"
             >
               {Array.isArray(vehicles) &&
                 vehicles.map((vehicle, index) => (
@@ -349,8 +349,9 @@ const VehicleListingPage = () => {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.3, delay: 0.05 * index }}
+                    className="w-full h-full" // Garante altura consistente
                   >
-                    <Card className="overflow-hidden border-0 bg-white dark:bg-gray-900 shadow-sm hover:shadow-md transition-all duration-300 h-full">
+                    <Card  className="overflow-hidden border-0 bg-white dark:bg-gray-900 shadow-sm hover:shadow-md transition-all duration-300 h-full flex flex-col">
                       <div className="relative overflow-hidden group">
                         {vehicle.imagens && vehicle.imagens.length > 0 ? (
                           <div className="overflow-hidden">
@@ -521,5 +522,4 @@ const VehicleListingPage = () => {
     </div>
   )
 }
-
 export default VehicleListingPage

@@ -23,13 +23,15 @@ import {
 } from "lucide-react"
 import useVehicle from "~/src/hooks/useVehicle"
 import { useAuth } from "~/src/hooks/useAuth"
-import type { Vehicle } from "~/src/store/slices/vehicle"
 import { Alert, AlertDescription, AlertTitle } from "~/components/ui/alert"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "~/components/ui/tooltip"
 import { Skeleton } from "~/components/ui/skeleton"
 import { formatPrice } from "~/src/lib/ultils"
 import { Input } from "~/components/ui/input"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "~/components/ui/dialog"
+
+import type { Vehicle } from "~/src/types/vehicle"
+
 
 const fadeIn = {
     hidden: { opacity: 0, y: 20 },
@@ -72,7 +74,7 @@ export function UserVehicleList() {
 
     useEffect(() => {
         if (user?.id) {
-        fetchUserVehicles() // Substitui o fetchVehicles com userId
+        fetchUserVehicles() 
         fetchUserFavorites()
         }
     }, [user?.id])

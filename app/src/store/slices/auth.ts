@@ -1,17 +1,9 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { authService } from '~/src/services/auth';
 import type { RootState } from '../store';
-
-interface User {
-  id: string;
-  nome: string;
-  email: string;
-  role: string;
-  avatar: string | null; // Sem opcionais, usar null
-  telefone: string | null;
-  cpf: string | null;
-  dataNascimento: string | null; // String ISO em vez de Date
-}
+import type { User } from '~/src/types/user';
+import type { LoginData, RegisterData } from '~/src/types/auth';
+import type { ResetPasswordData } from '~/src/types/password';
 
 interface AuthState {
     user: User | null;
@@ -22,7 +14,6 @@ interface AuthState {
       error: string | null;
     };
 }
-
 const initialState: AuthState = {
     user: null,
     status: 'idle',
@@ -33,24 +24,6 @@ const initialState: AuthState = {
     },
 };
 
-interface LoginData {
-    email: string;
-    senha: string;
-}
-
-interface RegisterData {
-    nome: string;
-    email: string;
-    senha: string;
-    telefone?: string;
-    cpf?: string;
-    dataNascimento?: string;
-}
-
-interface ResetPasswordData {
-    token: string;
-    senha: string;
-}
 
 // Ação de Registro
 export const registerUser = createAsyncThunk(

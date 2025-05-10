@@ -14,7 +14,9 @@ import {
 } from '~/src/store/slices/user';
 
 import type { RootState } from '../store/store';
-import type { UserUpdateData, AddressData } from '~/src/services/user';
+
+import type { UserUpdateData } from '../types/user';
+import type { AddressData } from '../types/adress';
 
 import type { UserState } from '../store/slices/user';
 

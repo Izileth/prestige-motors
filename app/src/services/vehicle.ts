@@ -1,61 +1,33 @@
 import api from './api';
-import type { Vehicle, Review, VehicleStats } from '~/src/store/slices/vehicle';
 
-// Parâmetros para busca de veículos
-export interface VehicleSearchParams {
-    userId?: string;
-    marca?: string;
-    modelo?: string;
-    precoMin?: number;
-    precoMax?: number;
-    anoMin?: number;
-    anoMax?: number;
-    combustivel?: string;
-    cambio?: string;
-    categoria?: string;
-    destaque?: boolean;
-}
+import type { Vehicle, VehicleStats, VehicleCreateInput, VehicleSearchParams } from '../types/vehicle';
 
-// Tipo para criação/atualização de veículo (sem o ID e campos gerados pelo servidor)
+import type { Review } from '../types/reviews';
 
-export type VehicleUpdateInput = Partial<VehicleCreateInput>;
+import type { VehicleUpdateInput, ReviewCreateInput } from '../types/inputs';
 
-export interface VehicleCreateInput {
-    marca: string;
-    modelo: string;
-    anoFabricacao: number;
-    anoModelo: number;
-    preco: number;
-    quilometragem: number;
-    tipoCombustivel: 'GASOLINA' | 'ETANOL' | 'FLEX' | 'DIESEL' | 'ELETRICO' | 'HIBRIDO' | 'GNV';
-    cambio: 'MANUAL' | 'AUTOMATICO' | 'SEMI_AUTOMATICO' | 'CVT';
-    cor: string;
-    portas: number;
-    finalPlaca?: number;
-    carroceria: 'HATCH' | 'SEDAN' | 'SUV' | 'PICAPE' | 'COUPE' | 'CONVERSIVEL' | 'PERUA' | 'MINIVAN' | 'VAN' | 'BUGGY' | 'OFFROAD';
-    potencia?: number;
-    motor?: string;
-    categoria: 'HYPERCAR' | 'SUPERCAR' | 'SPORTS_CAR' | 'CLASSIC_MUSCLE' | 'MODERN_MUSCLE' | 'RETRO_SUPER' | 'DRIFT_CAR' | 'TRACK_TOY' | 'OFFROAD' | 'BUGGY' | 'PICKUP_4X4' | 'SUV' | 'HOT_HATCH' | 'SALOON' | 'GT' | 'RALLY' | 'CONCEPT';
-    classe: 'D' | 'C' | 'B' | 'A' | 'S1' | 'S2' | 'X';
-    destaque?: boolean;
-    seloOriginal?: boolean;
-    aceitaTroca?: boolean;
-    parcelamento?: number;
-    localizacaoId?: string;
-    descricao?: string;
-    precoPromocional?: number;
-    status?: 'DISPONIVEL' | 'VENDIDO' | 'RESERVADO'; // Opcional (pode ter um valor padrão no backend)
-}
 
-// Tipo para criação de review (sem campos gerados pelo servidor)
-export type ReviewCreateInput = Pick<Review, 'rating' | 'comentario'>;
+
 
 export const vehicleService = {
 
     async getVehicles(params?: VehicleSearchParams): Promise<Vehicle[]> {
-        const response = await api.get('/vehicles', { params });
-        console.log('Resposta da API:', response.data); // ← Verifique aqui
-        return response.data?.data || []; // Ou o caminho correto para o array
+        // Limpa parâmetros undefined/null/empty
+        const cleanParams = Object.fromEntries(
+            Object.entries(params || {}).filter(([_, v]) => v !== undefined && v !== null && v !== '')
+        );
+
+        console.log('Enviando parâmetros para API:', cleanParams); // Debug
+        
+        const response = await api.get('/vehicles', { 
+            params: cleanParams,
+            paramsSerializer: {
+                indexes: null // Evita notação de colchetes nos arrays
+            }
+        });
+        
+        console.log('Resposta da API:', response.config.url); // Verifique a URL final
+        return response.data?.data || [];
     },
 
     async getVehicleById(id: string): Promise<Vehicle> {
@@ -85,11 +57,18 @@ export const vehicleService = {
         const response = await api.get('/vehicles/me/views');
         return response.data;
     },
-
+     
     async getFeaturedVehicles(): Promise<Vehicle[]> {
-        const response = await api.get('/vehicles', { params: { destaque: true } });
-        return response.data;
+        const response = await api.get('/vehicles', { 
+        params: { 
+            destaque: true,
+            limit: 8,
+            sort: '-createdAt'
+        } 
+        });
+        return response.data.data || [];
     },
+
 
 
     async addFavorite(vehicleId: string): Promise<{id: string}> {
@@ -102,25 +81,25 @@ export const vehicleService = {
         return { id: vehicleId };
     },
 
+   
     async getUserFavorites(): Promise<Vehicle[]> {
-        console.log('Fetching favorites...');
-        const response = await api.get('/vehicles/me/favorites');
-
-        console.log('Raw response:', response.data);
-        
-        // Verifica se a resposta tem a estrutura esperada
-        if (response.data && Array.isArray(response.data.data)) {
-          // Mapeia para extrair apenas os veículos e adiciona isFavorite: true
-            return response.data.data.map((item: { vehicle: Vehicle }) => ({
-                ...item.vehicle,
-                isFavorite: true // Garante que o flag esteja marcado
-            }));
+        const response = await api.get('/vehicles/me/favorites', {
+        params: {
+            include: 'vehicle'
         }
-
-        console.log('Processed favorites:', response);
+        });
         
+        // Processamento mais robusto da resposta
+        if (response.data?.data) {
+        return response.data.data.map((fav: any) => ({
+            ...fav.vehicle,
+            isFavorite: true,
+            favoritedAt: fav.createdAt
+        }));
+        }
         return [];
     },
+
 
     async createReview(vehicleId: string, data: ReviewCreateInput): Promise<Review> {
         const response = await api.post(`/vehicles/${vehicleId}/reviews`, data);
@@ -188,10 +167,7 @@ export const vehicleService = {
     await api.delete(`/vehicles/${vehicleId}/images`, {
         data: { imageId } // Usar imageId em vez de imageUrl para maior clareza
     });
-}
-
-
-    
+    } 
 };
 
 export default vehicleService;

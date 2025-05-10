@@ -27,7 +27,8 @@ import {
     Menu, 
     ShoppingBag,  
     ChevronRight,
-    User
+    User,
+    MessageSquare
 } from "lucide-react";
 
 // Import auth hook
@@ -59,6 +60,17 @@ interface NavigationProps {
    * @default 0
    */
   cartItemCount?: number
+ /**
+   * Number of active negotiations
+   * @default 0
+   */
+  negotiationCount?: number;
+
+  /**
+   * Whether to show the negotiations icon
+   * @default true
+   */
+  showNegotiations?: boolean;
 
   /**
    * Whether to show the shopping cart icon
@@ -82,6 +94,8 @@ const Navigation: React.FC<NavigationProps> = ({
     brandName = "Prestige Motors",
     customMenuItems,
     cartItemCount = 0,
+    negotiationCount = 0,
+    showNegotiations = true,
     showCart = true,
     logo,
     className,
@@ -119,19 +133,19 @@ const Navigation: React.FC<NavigationProps> = ({
 
     // Default menu items if not provided
     const defaultMenuItems: MenuItem[] = [
-        { name: "Home", href: "/" },
-        { name: "Featured", href: "/collection" },
+        { name: "Início", href: "/" },
+        { name: "Exclusivos", href: "/collection" },
         {
-        name: "Categories",
+        name: "Seções",
         href: "#",
         submenu: [
-            { name: "New", href: "/categories/new" },
-            { name: "Featured", href: "/categories/featured" },
-            { name: "Essentials", href: "/categories/essentials" },
+            { name: "Quem Somos", href: "/about" },
+            { name: "Nossa Missão", href: "/history" },
+            { name: "Suporte", href: "/support" },
         ],
         },
-        { name: "Vehicles", href: "/vehicles" },
-        { name: "Sell", href: "/vehicles/create" },
+        { name: "Catálogo", href: "/vehicles" },
+        { name: "Divulgar Veículo", href: "/vehicles/create" },
     ]
 
     // Use custom menu items if provided, otherwise use default
@@ -271,17 +285,19 @@ const Navigation: React.FC<NavigationProps> = ({
                 </Link>
             </div>
             )}
-
-            {showCart && (
-            <Link to="/cart" className="relative">
-                <ShoppingBag className="h-5 w-5 stroke-1" />
-                {cartItemCount > 0 && (
-                <Badge className="absolute -top-2 -right-2 h-4 w-4 flex items-center justify-center p-0 text-[10px] font-extralight bg-foreground text-background rounded-full">
-                    {cartItemCount}
-                </Badge>
+            {showNegotiations && (
+                    <Link to="/vehicles/negociations" className="relative group">
+                        <MessageSquare className="h-5 w-5 stroke-1" />
+                        {negotiationCount > 0 && (
+                            <Badge className="absolute -top-2 -right-2 h-4 w-4 flex items-center justify-center p-0 text-[10px] font-extralight bg-foreground text-background rounded-full">
+                                {negotiationCount}
+                            </Badge>
+                        )}
+                        <span className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-xs opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                            Negociações
+                        </span>
+                    </Link>
                 )}
-            </Link>
-            )}
         </div>
         </div>
     )
@@ -296,20 +312,23 @@ const Navigation: React.FC<NavigationProps> = ({
         <div className="flex items-center gap-5">
             {isAuthenticated && (
             <Link to="/dashboard">
-                <User className="h-5 w-5 stroke-1" />
+                 <Avatar className="h-9 w-9 border border-border">
+                        <AvatarImage src={user?.avatar || ""} alt={user?.nome || "User"} />
+                        <AvatarFallback className="text-xs font-extralight">{user?.nome?.charAt(0) || "U"}</AvatarFallback>
+                    </Avatar>
             </Link>
             )}
 
-            {showCart && (
-            <Link to="/cart" className="relative">
-                <ShoppingBag className="h-5 w-5 stroke-1" />
-                {cartItemCount > 0 && (
-                <Badge className="absolute -top-2 -right-2 h-4 w-4 flex items-center justify-center p-0 text-[10px] font-extralight bg-foreground text-background rounded-full">
-                    {cartItemCount}
-                </Badge>
-                )}
-            </Link>
-            )}
+            {showNegotiations && (
+                    <Link to="/vehicles/negociations" className="relative">
+                        <MessageSquare className="h-5 w-5 stroke-1" />
+                        {negotiationCount > 0 && (
+                            <Badge className="absolute -top-2 -right-2 h-4 w-4 flex items-center justify-center p-0 text-[10px] font-extralight bg-foreground text-background rounded-full">
+                                {negotiationCount}
+                            </Badge>
+                        )}
+                    </Link>
+            )}    
 
             <Sheet>
             <SheetTrigger asChild>

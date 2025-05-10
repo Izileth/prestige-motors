@@ -1,45 +1,9 @@
 import api from './api';
+import type { User } from '../types/user';
+import type { LoginData, RegisterData,  } from '../types/auth';
+import type { ForgotPasswordData, ResetPasswordData } from '../types/password';
+import type { AuthResponse } from '../types/response';
 
-interface User {
-    id: string;
-    nome: string;
-    email: string;
-    role: string;
-    avatar: string | null; // Sem opcionais, usar null
-    telefone: string | null;
-    cpf: string | null;
-    dataNascimento: string | null; // String ISO em vez de Date
-}
-
-interface LoginData {
-    email: string;
-    senha: string;
-}
-
-interface RegisterData {
-    nome: string;
-    email: string;
-    senha: string;
-    telefone?: string;
-    cpf?: string;
-    dataNascimento?: string;
-}
-
-interface ForgotPasswordData {
-    email: string;
-}
-
-interface ResetPasswordData {
-    token: string;
-    senha: string;
-}
-
-// Interfaces para respostas da API
-interface AuthResponse {
-    success: boolean;
-    token: string;
-    user: User;
-}
 
 export const authService = {
     async register(data: RegisterData): Promise<AuthResponse> {

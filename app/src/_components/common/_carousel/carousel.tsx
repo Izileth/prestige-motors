@@ -76,12 +76,12 @@ type CarouselProps = {
 
     return (
         <div
-        className={cn("relative overflow-hidden", className)}
+        className={cn("relative overflow-hidden ", className)}
         onMouseEnter={() => setIsPaused(true)}
         onMouseLeave={() => setIsPaused(false)}
         >
-        <MotionConfig transition={{ duration: 0.7, ease: [0.32, 0.72, 0, 1] }}>
-            <div className="relative aspect-[16/9] md:aspect-[2/1] overflow-hidden rounded-none">
+        <MotionConfig  transition={{ duration: 0.7, ease: [0.32, 0.72, 0, 1] }}>
+            <div className="relative h-[500px] md:h-[600px] lg:h-[800px] overflow-hidden rounded-none">
             <AnimatePresence initial={false} custom={direction}>
                 <motion.div
                 key={page}
@@ -98,7 +98,7 @@ type CarouselProps = {
                     alt={currentItem.title}
                     className="h-full w-full object-cover"
                 />
-                <div className="absolute inset-0 flex flex-col justify-center  items-center lg:items-start lg:pl-24 p-6 md:p-10 z-20 text-white">
+                <div className="absolute inset-0 flex flex-col justify-center items-center p-6 md:p-10 lg:items-start lg:pl-24 z-20 text-white">
                     <motion.h2
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -111,7 +111,7 @@ type CarouselProps = {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5, delay: 0.4 }}
-                    className="text-sm md:text-base lg:text-xl max-w-md opacity-90"
+                    className="text-sm md:text-base lg:text-xl max-w-md opacity-90 text-center md:text-left"
                     >
                     {currentItem.description}
                     </motion.p>

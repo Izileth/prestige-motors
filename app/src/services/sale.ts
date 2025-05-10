@@ -1,51 +1,9 @@
 import api from './api';
+import type { SaleData, SaleStats, UpdateSaleData } from '../types/sale';
 
-export interface SaleData {
-    vehicleId: string;
-    compradorId: string;
-    precoVenda: number;
-    formaPagamento: string;
-    parcelas?: number;
-    observacoes?: string;
-}
 
-export interface UpdateSaleData {
-    precoVenda?: number;
-    status?: string;
-    formaPagamento?: string;
-    observacoes?: string;
-}
 
-export interface SaleStats {
-    totalSales: number;
-    totalRevenue: number;
-    averageSalePrice: number;
-    byPaymentMethod: Record<string, { 
-        count: number;
-        total: number;
-    }>;
-    byStatus: Record<string, {
-        count: number;
-        total: number;
-    }>;
-    monthlySales: Array<{
-        month: string;
-        count: number;
-        total: number;
-        average?: number;
-    }>;
-    topVehicles: Array<{
-        vehicleId: string;
-        model: string;
-        brand: string;
-        salesCount: number;
-        totalRevenue: number;
-    }>;
-    salesTrend?: {
-        labels: string[];
-        data: number[];
-    };
-}
+
 export const saleService = {
     async createSale(data: SaleData) {
         const response = await api.post('/sales', data);

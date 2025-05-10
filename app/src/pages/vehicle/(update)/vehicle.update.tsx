@@ -48,7 +48,8 @@ import {
   DialogFooter,
 } from "~/components/ui/dialog"
 
-import type { VehicleImage } from "~/src/store/slices/vehicle"
+import type { VehicleImage } from "~/src/types/vehicle"
+
 
 import { FuelType, TransmissionType, BodyType, VehicleCategory, VehicleClass } from "../(create)/vehicle.create"
 

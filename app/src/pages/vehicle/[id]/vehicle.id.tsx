@@ -28,7 +28,7 @@ import {
   ChevronRight,
 } from "lucide-react"
 import useVehicle from "~/src/hooks/useVehicle"
-import type { ReviewCreateInput } from "~/src/services/vehicle"
+import type { ReviewCreateInput } from "~/src/types/inputs"
 import { motion, AnimatePresence } from "framer-motion"
 
 const VehicleDetailsPage = () => {
