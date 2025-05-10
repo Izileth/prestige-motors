@@ -1,5 +1,5 @@
 import { User } from "lucide-react";
-import type { Route } from "../../+types/home";
+import type { Route } from "../../_vehicle/_negociation/+types/negociation";
 import NegotiationsPage from "~/src/pages/vehicle/(negociations)/negociation";
 export function meta({}: Route.MetaArgs) {
     return [

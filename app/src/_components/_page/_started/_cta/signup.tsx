@@ -71,7 +71,7 @@ export function SignupCTA() {
                     whileHover={{ y: -4 }}
                     whileTap={{ y: 0 }}
                     transition={{ duration: 0.3 }}
-                    className="relative bg-black dark:bg-white text-white dark:text-black py-4 px-12 md:px-16 text-sm md:text-base font-light tracking-wider z-10 overflow-hidden group"
+                    className="relative bg-black dark:bg-white text-white dark:text-black py-2 px-12 md:px-10 text-sm md:text-base font-light tracking-wider z-10 overflow-hidden group"
                     onClick={handleSignIn}
                     >
                     <span className="relative z-10">CRIAR MINHA CONTA</span>

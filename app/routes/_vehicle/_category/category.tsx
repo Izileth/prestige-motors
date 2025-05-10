@@ -1,4 +1,4 @@
-import type { Route } from "../../+types/home";
+import type { Route } from "../../_vehicle/_category/+types/category";
 import { VehiclesByCategoryPage} from "~/src/pages/vehicle/(category)/vehicle.category";
 
 export function meta({}: Route.MetaArgs) {

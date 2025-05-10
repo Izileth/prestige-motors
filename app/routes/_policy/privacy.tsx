@@ -1,14 +1,14 @@
 import type { Route } from "../_password/+types/forgout";
-import RecoverPasswordPage from "~/src/pages/passwords/forgot";
+import PrivacyPolicyPage from "~/src/pages/polities/(privacy)/privacy";
 export function meta({}: Route.MetaArgs) {
     return [
-        { title: "Redefinição de Senha | Prestige Motors" },
+        { title: "Política de Privacidade | Prestige Motors" },
         { name: "description", content: "Welcome to React Router!" },
     ];
 }
 
-export default function Register() {
+export default function Privacy() {
     return (
-        <RecoverPasswordPage/>
+        <PrivacyPolicyPage/>
     );
 }

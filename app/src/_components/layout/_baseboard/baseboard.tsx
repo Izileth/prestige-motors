@@ -6,19 +6,19 @@ const promos = [
     {
         id: 1,
         text: "Cadastre-se para anunciar ainda hoje",
-        link: "/promo/frete-gratis",
+        link: "/register",
         cta: "Saiba mais",
     },
     {
         id: 2,
         text: "Oferta relâmpago! 5% de desconto em veículos espotivos",
-        link: "/promo/desconto-a-vista",
+        link: "/destacts",
         cta: "Aproveite",
     },
     {
         id: 3,
         text: "Garantia estendida de 5 anos em todos os importados",
-        link: "/promo/garantia-estendida",
+        link: "/vehicles",
         cta: "Confira",
     },
 ]

@@ -6,19 +6,19 @@ const promos = [
   {
     id: 1,
     text: "Cadastre-se e receba recomendações dos nossos parceiros",
-    link: "/promo/frete-gratis",
+    link: "/register",
     cta: "Saiba mais",
   },
   {
     id: 2,
     text: "Oferta relâmpago! 10% de desconto em veículos à vista",
-    link: "/promo/desconto-a-vista",
+    link: "/vehicles",
     cta: "Aproveite",
   },
   {
     id: 3,
     text: "Garantia estendida de 2 anos em todos os seminovos",
-    link: "/promo/garantia-estendida",
+    link: "/destacts",
     cta: "Confira",
   },
 ]

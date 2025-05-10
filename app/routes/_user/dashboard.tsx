@@ -1,4 +1,4 @@
-import type { Route } from "../+types/home";
+import type { Route } from "../_user/+types/dashboard";
 import ProfilePage from "~/src/pages/dashboard/profile";
 export function meta({}: Route.MetaArgs) {
     return [

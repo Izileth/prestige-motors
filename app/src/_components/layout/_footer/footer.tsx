@@ -2,7 +2,9 @@ import React from "react";
 import { Link } from "react-router";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
-import { Separator } from "~/components/ui/separator";
+import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
+import { CheckCircle } from "lucide-react";
 import { 
   Instagram, 
   Facebook, 
@@ -134,16 +136,16 @@ interface FooterProps {
  * A minimalist, responsive footer component
  */
 const Footer: React.FC<FooterProps> = ({
-  companyName = "BRAND",
-  companyDescription = "Exclusive shopping experience with premium quality products and timeless design.",
+  companyName = "PRESTIGE MOTORS",
+  companyDescription = "Os catalógos mais diversificados do mundo em um só lugar ",
   showNewsletter = true,
   customLinkGroups,
   customSocialLinks,
   customLegalLinks,
-  newsletterTitle = "Subscribe to our newsletter",
-  newsletterDescription = "Receive new releases, news and exclusive promotions.",
-  newsletterButtonText = "Subscribe",
-  newsletterPlaceholder = "Your email",
+  newsletterTitle = "Se increva em nosso Grupo Especial",
+  newsletterDescription = "Receba Informações Sobre os Últimos Lançamentos",
+  newsletterButtonText = "Escreva-se",
+  newsletterPlaceholder = "Seu Email",
   onNewsletterSubmit,
   className = "",
   logo,
@@ -154,30 +156,30 @@ const Footer: React.FC<FooterProps> = ({
   // Default link groups
   const defaultLinkGroups: FooterLinkGroup[] = [
     {
-      title: "Shop",
+      title: "Garagem",
       links: [
-        { name: "New collection", href: "/collection/new" },
-        { name: "Best sellers", href: "/best-sellers" },
-        { name: "Promotions", href: "/promotions" },
-        { name: "Categories", href: "/categories" },
+        { name: "Anunciar", href: "/vehicles/create" },
+        { name: "Classes", href: "/vehicles/category" },
+        { name: "Veículos", href: "/vehicles/user" },
+        { name: "Destaques", href: "/destacts" },
       ],
     },
     {
-      title: "Help",
+      title: "Detalhes",
       links: [
-        { name: "My account", href: "/account" },
-        { name: "Track order", href: "/track" },
-        { name: "Returns", href: "/returns" },
-        { name: "FAQ", href: "/faq" },
+        { name: "Conta", href: "/dashboard" },
+        { name: "Catálogo", href: "/vehicles" },
+        { name: "Anúncios", href: "/vehicles/negociations" },
+        { name: "Dúvidas & Repostas", href: "/support" },
       ],
     },
     {
-      title: "About",
+      title: "Nos Conheça",
       links: [
-        { name: "About us", href: "/about" },
-        { name: "Stores", href: "/stores" },
-        { name: "Careers", href: "/careers" },
-        { name: "Sustainability", href: "/sustainability" },
+        { name: "Nossa História", href: "/about" },
+        { name: "Nossa Missão", href: "/history" },
+        { name: "Nosso Suporte", href: "/support" },
+        { name: "Nossa Política", href: "/polities/ecological" },
       ],
     },
   ]
@@ -192,9 +194,9 @@ const Footer: React.FC<FooterProps> = ({
 
   // Default legal links
   const defaultLegalLinks = [
-    { name: "Terms & Conditions", href: "/terms" },
-    { name: "Privacy Policy", href: "/privacy" },
-    { name: "Cookie Policy", href: "/cookies" },
+    { name: "Terms & Conditions", href: "/polities/conditions" },
+    { name: "Privacy Policy", href: "/polities/privacy" },
+    { name: "Cookie Policy", href: "/polities/cookies" },
   ]
 
   // Use custom links if provided, otherwise use defaults
@@ -202,15 +204,59 @@ const Footer: React.FC<FooterProps> = ({
   const socialLinks = customSocialLinks || defaultSocialLinks
   const legalLinks = customLegalLinks || defaultLegalLinks
 
+  const navigate = useNavigate();
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const [submitSuccess, setSubmitSuccess] = React.useState(false);
   // Handle newsletter submission
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (email && onNewsletterSubmit) {
-      onNewsletterSubmit(email)
-      setEmail("")
-    }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  
+  if (!email) {
+    toast.error("Por favor, insira um email válido");
+    return;
   }
 
+  setIsSubmitting(true);
+
+  // Simula uma requisição assíncrona
+  try {
+    await new Promise(resolve => setTimeout(resolve, 1500));
+    
+    if (onNewsletterSubmit) {
+      onNewsletterSubmit(email);
+    } else {
+      toast.success("🎉 Inscrição realizada com sucesso!", {
+        description: "Redirecionando para a página de confirmação...",
+        duration: 3000,
+        action: {
+          label: "Fechar",
+          onClick: () => {}
+        },
+      });
+      
+      setSubmitSuccess(true);
+        
+        // Timeout antes do redirecionamento
+        setTimeout(() => {
+          navigate("/newsletter", {
+            state: { email },
+          });
+        }, 3500); // 3.5 segundos no total
+      }
+    } catch (error) {
+      toast.error("Ocorreu um erro", {
+        description: "Por favor, tente novamente mais tarde.",
+      });
+    } finally {
+      setIsSubmitting(false);
+      if (!onNewsletterSubmit) {
+        setEmail("");
+      }
+    }
+  };
+
+ 
   return (
     <footer className={`bg-background border-t border-border w-full ${className}`}>
       <div className="container px-4 md:px-6 py-12 md:py-16">
@@ -281,9 +327,31 @@ const Footer: React.FC<FooterProps> = ({
                     />
                   </div>
                 </div>
-                <Button type="submit" className="h-10 w-full" size="sm">
-                  <span className="text-xs font-light">{newsletterButtonText}</span>
-                  <ChevronRight className="ml-2 h-4 w-4" />
+                <Button 
+                  type="submit" 
+                  className="h-10 w-full transition-all" 
+                  size="sm"
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? (
+                    <>
+                      <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      Processando...
+                    </>
+                  ) : submitSuccess ? (
+                    <>
+                      <CheckCircle className="mr-2 h-4 w-4" />
+                      Inscrito!
+                    </>
+                  ) : (
+                    <>
+                      <span className="text-xs font-light">{newsletterButtonText}</span>
+                      <ChevronRight className="ml-2 h-4 w-4" />
+                    </>
+                  )}
                 </Button>
               </form>
             </div>
@@ -294,7 +362,7 @@ const Footer: React.FC<FooterProps> = ({
         <div className="mt-16 pt-8 border-t border-border">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             <p className="text-xs font-extralight text-muted-foreground">
-              © {currentYear} {companyName}. All rights reserved.
+              © {currentYear} {companyName}.Todos os Direitos Reservados.
             </p>
             <div className="flex flex-wrap gap-x-6 gap-y-2 justify-center">
               {legalLinks.map((link) => (

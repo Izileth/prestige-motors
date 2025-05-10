@@ -1,4 +1,4 @@
-import type { Route } from "../+types/home";
+import type { Route } from "../_vehicle/+types/vehicle";
 import VehicleListingPage from "~/src/pages/vehicle/(listing)/vehicle.review";
 export function meta({}: Route.MetaArgs) {
     return [

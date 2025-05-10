@@ -130,11 +130,12 @@ const Navigation: React.FC<NavigationProps> = ({
         console.error("Logout failed:", error)
         }
     }
+    
 
     // Default menu items if not provided
     const defaultMenuItems: MenuItem[] = [
         { name: "Início", href: "/" },
-        { name: "Exclusivos", href: "/collection" },
+        { name: "Exclusivos", href: "/destacts" },
         {
         name: "Seções",
         href: "#",
@@ -142,6 +143,7 @@ const Navigation: React.FC<NavigationProps> = ({
             { name: "Quem Somos", href: "/about" },
             { name: "Nossa Missão", href: "/history" },
             { name: "Suporte", href: "/support" },
+            { name: "Política Ecológica", href: "/polities/ecological" },
         ],
         },
         { name: "Catálogo", href: "/vehicles" },
