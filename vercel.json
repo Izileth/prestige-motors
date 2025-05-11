@@ -1,7 +1,21 @@
 {
-    "rewrites": [
-        { "source": "/(.*)", "destination": "/" }
+    "version": 2,
+    "builds": [
+        {
+        "src": "vite.config.ts",
+        "use": "@vercel/static-build",
+        "config": {
+            "distDir": "build"
+        }
+        }
     ],
-    "buildCommand": "npm run build",
-    "outputDirectory": "dist"
-    }
+    "routes": [
+        {
+        "handle": "filesystem"
+        },
+        {
+        "src": "/(.*)",
+        "dest": "/index.html"
+        }
+    ]
+}

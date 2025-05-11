@@ -8,6 +8,8 @@ import {
 } from "react-router";
 
 import type { Route } from "./+types/root";
+import { Link } from "react-router";
+import { motion } from "framer-motion";
 import "./app.css";
 
 import { ReduxProviders } from "./providers";
@@ -91,14 +93,18 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
   }
 
   return (
-    <main className="pt-16 p-4 container mx-auto">
-      <h1>{message}</h1>
-      <p>{details}</p>
-      {stack && (
-        <pre className="w-full p-4 overflow-x-auto">
-          <code>{stack}</code>
-        </pre>
-      )}
-    </main>
+  <div className="bg-zinc-950 text-white min-h-screen flex items-center justify-center text-center p-8">
+      <motion.div
+        initial={{ scale: 0.8 }}
+        animate={{ scale: 1 }}
+        transition={{ type: "spring" }}
+      >
+        <h1 className="text-9xl font-bold mb-4">{message}</h1>
+        <p className="text-xl mb-8">{details}</p>
+        <Link to="/" className="border border-white px-6 py-3 inline-block rounded-full">
+          Voltar ao Início
+        </Link>
+      </motion.div>
+    </div>
   );
 }

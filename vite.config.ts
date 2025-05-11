@@ -6,6 +6,7 @@ import tsconfigPaths from "vite-tsconfig-paths";
 export default defineConfig({
   plugins: [tailwindcss(), reactRouter(), tsconfigPaths()],
   build: {
-    sourcemap: false,  // Desabilita os source maps para produção
+    sourcemap: false,  // Desabilita os source maps para produção  
+    ssr: false // Desativa SSR se não estiver usando
   },
 });
