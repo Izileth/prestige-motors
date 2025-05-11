@@ -1,5 +1,5 @@
 import type { Route } from "../_destacts/+types/destacts";
-import { VehicleListing } from "~/src/_components/_page/_destacts/grid";
+import DestactsPage from "~/src/pages/destacts/destacts";
 export function meta({}: Route.MetaArgs) {
     return [
         { title: "Destaques | Prestige Motors" },
@@ -9,6 +9,6 @@ export function meta({}: Route.MetaArgs) {
 
 export default function Destacts() {
     return (
-        <VehicleListing/>
+        <DestactsPage/>
     );
 }

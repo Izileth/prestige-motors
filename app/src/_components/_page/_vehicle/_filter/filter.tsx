@@ -1,5 +1,11 @@
 // components/VehicleFilters.tsx
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "~/components/ui/select";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "~/components/ui/select";
 import { Slider } from "~/components/ui/slider";
 import { Button } from "~/components/ui/button";
 import { Filter, X } from "lucide-react";
@@ -7,22 +13,25 @@ import type { VehicleSearchParams } from "~/src/types/vehicle";
 
 interface VehicleFiltersProps {
     searchParams: VehicleSearchParams;
-    onFilterChange: (field: keyof VehicleSearchParams, value: string | number) => void;
+    onFilterChange: (
+        field: keyof VehicleSearchParams,
+        value: string | number
+    ) => void;
     onReset: () => void;
 }
 
-export const VehicleFilters = ({ 
-    searchParams, 
+export const VehicleFilters = ({
+    searchParams,
     onFilterChange,
-    onReset 
+    onReset,
     }: VehicleFiltersProps) => {
     return (
         <div className="bg-white dark:bg-gray-900 p-6 rounded-lg shadow-sm border border-gray-100 dark:border-gray-800">
         <div className="flex justify-between items-center mb-6">
             <h3 className="text-lg font-medium">Filtrar veículos</h3>
-            <Button 
-            variant="ghost" 
-            size="sm" 
+            <Button
+            variant="ghost"
+            size="sm"
             onClick={onReset}
             className="text-gray-500 hover:text-gray-900 dark:hover:text-white"
             >
@@ -35,7 +44,10 @@ export const VehicleFilters = ({
             <div>
             <label className="block text-sm font-medium mb-2">Preço</label>
             <Slider
-                defaultValue={[searchParams.precoMin || 0, searchParams.precoMax || 500000]}
+                defaultValue={[
+                searchParams.precoMin || 0,
+                searchParams.precoMax || 500000,
+                ]}
                 max={500000}
                 step={1000}
                 onValueChange={(value) => {
@@ -44,8 +56,12 @@ export const VehicleFilters = ({
                 }}
             />
             <div className="flex justify-between mt-2 text-sm text-gray-600 dark:text-gray-400">
-                <span>R$ {searchParams.precoMin?.toLocaleString("pt-BR") || "0"}</span>
-                <span>R$ {searchParams.precoMax?.toLocaleString("pt-BR") || "500.000"}</span>
+                <span>
+                R$ {searchParams.precoMin?.toLocaleString("pt-BR") || "0"}
+                </span>
+                <span>
+                R$ {searchParams.precoMax?.toLocaleString("pt-BR") || "500.000"}
+                </span>
             </div>
             </div>
 
@@ -64,6 +80,10 @@ export const VehicleFilters = ({
                 <SelectItem value="GASOLINA">Gasolina</SelectItem>
                 <SelectItem value="ETANOL">Etanol</SelectItem>
                 <SelectItem value="FLEX">Flex</SelectItem>
+                <SelectItem value="DIESEL">Diesel</SelectItem>
+                <SelectItem value="ELETRICO">Elétrico</SelectItem>
+                <SelectItem value="HIBRIDO">Híbrido</SelectItem>
+                <SelectItem value="GNV">GNV</SelectItem>
                 </SelectContent>
             </Select>
             </div>
@@ -82,6 +102,8 @@ export const VehicleFilters = ({
                 <SelectItem value="All">Todos</SelectItem>
                 <SelectItem value="MANUAL">Manual</SelectItem>
                 <SelectItem value="AUTOMATICO">Automático</SelectItem>
+                <SelectItem value="SEMI_AUTOMATICO">Semi-automático</SelectItem>
+                <SelectItem value="CVT">CVT</SelectItem>
                 </SelectContent>
             </Select>
             </div>
@@ -99,9 +121,14 @@ export const VehicleFilters = ({
                 </SelectTrigger>
                 <SelectContent>
                     <SelectItem value="All">Todos</SelectItem>
+                    <SelectItem value="HYPERCAR">Hypercar</SelectItem>
+                    <SelectItem value="SUPERCAR">Supercar</SelectItem>
+                    <SelectItem value="SPORTS_CAR">Sports Car</SelectItem>
+                    <SelectItem value="CLASSIC_MUSCLE">Classic Muscle</SelectItem>
+                    <SelectItem value="MODERN_MUSCLE">Modern Muscle</SelectItem>
+                    <SelectItem value="GT">GT</SelectItem>
                     <SelectItem value="SUV">SUV</SelectItem>
-                    <SelectItem value="SPORTS_CAR">Esportivos</SelectItem>
-                    <SelectItem value="PICKUP_4X4">Picapes</SelectItem>
+                    <SelectItem value="PICKUP_4X4">Pickup 4x4</SelectItem>
                 </SelectContent>
                 </Select>
             </div>

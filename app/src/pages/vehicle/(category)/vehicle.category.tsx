@@ -9,7 +9,11 @@ import { Button } from "~/components/ui/button"
 import { Filter, X, ChevronUp, ArrowRight, Search } from "lucide-react"
 import { usePersistentFilters } from "~/src/hooks/usePersitFilters"
 import type { Vehicle, VehicleSearchParams } from "~/src/types/vehicle"
+import { useNavigate } from 'react-router';
 import { Badge } from "~/components/ui/badge"
+
+import { ExpecionalCars } from "~/src/data/static/carousel"
+import { Carousel } from "~/src/_components/common/_carousel/carousel"
 
 export const VehiclesByCategoryPage = () => {
   const location = useLocation()
@@ -18,8 +22,12 @@ export const VehiclesByCategoryPage = () => {
   const [scrolled, setScrolled] = useState(false)
   const resultsRef = useRef<HTMLDivElement>(null)
 
-  const { vehicles, loading, error, fetchVehicles, addFavorite, removeFavorite, fetchUserFavorites, favorites } =
-    useVehicle()
+  const { vehicles, loading, error, fetchVehicles, addFavorite, removeFavorite, fetchUserFavorites, favorites } = useVehicle()
+  const navigate = useNavigate()
+
+  const handleVehicles = () => {
+    navigate('/vehicles')
+  }
 
   // Update search when filters change (with debounce)
   useEffect(() => {
@@ -66,6 +74,7 @@ export const VehiclesByCategoryPage = () => {
     setShowFilters(false)
   }
 
+
   const toggleFavorite = async (vehicle: Vehicle) => {
     if (favorites.some((v) => v.id === vehicle.id)) {
       await removeFavorite(vehicle.id)
@@ -81,6 +90,8 @@ export const VehiclesByCategoryPage = () => {
 
   return (
     <div className="min-h-screen bg-white dark:bg-gray-950 transition-colors duration-300">
+
+      <Carousel items={ExpecionalCars}  className="max-w-full w-full"/>
       {/* Show category grid only if no category filter is active */}
       {!filters.categoria && <CategoryGrid />}
 
@@ -186,23 +197,71 @@ export const VehiclesByCategoryPage = () => {
         {/* Vehicle listing */}
         <div className="py-8">
           {error ? (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="text-center py-16 border border-gray-100 dark:border-gray-800 rounded-none"
-            >
-              <div className="max-w-md mx-auto">
-                <p className="text-red-500 dark:text-red-400 mb-4">Não foi possível carregar os veículos</p>
-                <Button
-                  onClick={() => fetchVehicles(filters)}
-                  className="bg-black hover:bg-gray-900 text-white dark:bg-white dark:text-black dark:hover:bg-gray-100"
-                >
-                  Tentar novamente
-                </Button>
-              </div>
-            </motion.div>
+              <motion.div
+                        initial={{ opacity: 0, y: -20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                        className="max-w-2xl mx-auto text-center p-8 md:p-12 bg-transparent dark:bg-gray-900 "
+                      >
+                        <div className="flex flex-col items-center gap-6">
+                          {/* Ilustração SVG */}
+                          <motion.div
+                            initial={{ scale: 0.8 }}
+                            animate={{ scale: 1 }}
+                            transition={{ delay: 0.2 }}
+                            className="text-gray-400 dark:text-gray-600"
+                          >
+                            <svg
+                              width="120"
+                              height="120"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="1.5"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            >
+                              <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+                              <line x1="12" y1="9" x2="12" y2="13" />
+                              <line x1="12" y1="17" x2="12.01" y2="17" />
+                            </svg>
+                          </motion.div>
+            
+                          <div className="space-y-3">
+                            <h3 className="text-xl font-light text-gray-800 dark:text-gray-200">
+                              Falha ao carregar veículos
+                            </h3>
+                            <p className="text-gray-500 dark:text-gray-400 font-light">
+                              Não foi possível carregar os veículos no momento. Por favor, tente novamente.
+                            </p>
+                          </div>
+            
+                          <motion.button
+                            whileHover={{ scale: 1.03 }}
+                            whileTap={{ scale: 0.97 }}
+                            className="px-6 py-2 text-sm bg-transparent text-gray-800 dark:text-gray-200 font-light rounded-md border border-gray-300 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-200 flex items-center gap-2"
+                            onClick={() => fetchVehicles(filters)}
+                          >
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="16"
+                              height="16"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              className="animate-spin"
+                            >
+                              <path d="M21 12a9 9 0 1 1-6.219-8.56" />
+                            </svg>
+                            Tentar novamente
+                          </motion.button>
+                        </div>
+                      </motion.div>
           ) : loading ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
               {[...Array(6)].map((_, i) => (
                 <VehicleCardSkeleton key={i} />
               ))}
@@ -274,7 +333,8 @@ export const VehiclesByCategoryPage = () => {
           >
             <Button
               variant="outline"
-              className="group border-gray-200 dark:border-gray-800 hover:bg-gray-100 dark:hover:bg-gray-900 gap-2"
+              className="group border-gray-200 border-none rounded-none shadow-none dark:border-gray-800 hover:bg-gray-100 dark:hover:bg-gray-900 gap-2"
+              onClick={handleVehicles}
             >
               <span>Ver mais veículos</span>
               <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform duration-300" />

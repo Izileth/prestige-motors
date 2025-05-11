@@ -27,7 +27,7 @@ const TermsPage = () => {
             transition={{ duration: 0.8 }}
         >
             <motion.div
-            className="absolute inset-0 bg-[url('/images/terms-hero.jpg')] bg-cover bg-center opacity-5"
+            className="absolute grayscale-100 inset-0 bg-[url('https://cdn.leonardo.ai/users/c60a0145-a4a8-4ee5-91cf-76495889e8b2/generations/8dbcab80-6ad5-43a7-95be-d083de93f4f3/Leonardo_Kino_XL_Interior_image_of_the_executive_lounge_at_Pre_3.jpg')] bg-cover bg-center opacity-5"
             initial={{ scale: 1.05 }}
             animate={{ scale: 1 }}
             transition={{ duration: 1.2 }}

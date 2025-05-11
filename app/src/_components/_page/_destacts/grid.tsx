@@ -4,7 +4,7 @@ import { VehicleCard, VehicleCardSkeleton } from '~/src/_components/_page/_vehic
 import { motion } from 'framer-motion';
 import { Button } from '~/components/ui/button';
 import { ArrowRight, RefreshCw } from 'lucide-react';
-
+import { useNavigate } from 'react-router';
 interface VehicleListingProps {
     title?: string;
     subtitle?: string;
@@ -12,7 +12,7 @@ interface VehicleListingProps {
     itemCount?: number;
 }
 
-export const VehicleListing = ({
+export const VehiclesDestactsListing = ({
     title = "Veículos em Destaque",
     subtitle = "Descubra nossa seleção premium",
     showRefresh = true,
@@ -21,6 +21,11 @@ export const VehicleListing = ({
     const { featuredVehicles, loading, refresh } = useFeaturedVehicles(itemCount);
     const hasInitialLoad = useRef(false);
 
+    const navigate = useNavigate()
+
+    const handleVehicles = () => {
+        navigate('/vehicles')
+    }
     // Só atualiza o ref uma vez quando os veículos são carregados
     useEffect(() => {
         if (!hasInitialLoad.current && featuredVehicles.length > 0) {
@@ -79,7 +84,7 @@ export const VehicleListing = ({
             {/* Call to Action */}
             {featuredVehicles.length > 0 && (
                 <div className="flex justify-center mt-12">
-                    <Button variant="outline" className="gap-2 border-none shadow-none bg-transparent">
+                    <Button onClick={handleVehicles} variant="outline" className="gap-2 border-none shadow-none bg-transparent">
                         Ver todos os veículos
                         <ArrowRight size={16} />
                     </Button>

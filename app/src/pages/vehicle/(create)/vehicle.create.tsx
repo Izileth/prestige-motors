@@ -364,8 +364,8 @@ const CreateVehiclePage = () => {
             transition={{ duration: 0.5 }}
             className="mb-8"
             >
-            <h1 className="text-3xl font-medium text-gray-900 dark:text-gray-100 mb-2">Adicionar Novo Veículo</h1>
-            <p className="text-gray-600 dark:text-gray-400">
+            <h1 className="text-3xl font-light text-gray-900 dark:text-gray-100 mb-2">Adicionar Novo Veículo</h1>
+            <p className="text-gray-600 font-extralight dark:text-gray-400">
                 Preencha os detalhes do veículo que deseja anunciar em nossa loja.
             </p>
             </motion.div>
@@ -410,10 +410,10 @@ const CreateVehiclePage = () => {
             <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
                 <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
-                <TabsList className="grid w-full grid-cols-4 bg-gray-100 dark:bg-gray-900 p-1 rounded-lg mb-6">
+                <TabsList className="grid w-full grid-cols-4 bg-transparent dark:bg-gray-900 p-1 rounded-lg mb-6">
                     <TabsTrigger
                     value="basic"
-                    className="data-[state=active]:bg-white dark:data-[state=active]:bg-gray-800 data-[state=active]:text-black dark:data-[state=active]:text-white rounded-md flex items-center gap-2"
+                    className="data-[state=active]:border-b-zinc-950 data-[state=active]:bg-transparent data-[state=active]:shadow-none rounded-none dark:data-[state=active]:bg-gray-800 data-[state=active]:text-black dark:data-[state=active]:text-white  flex items-center gap-2"
                     >
                     <Car className="h-4 w-4" />
                     <span className="hidden sm:inline">Informações Básicas</span>
@@ -421,7 +421,7 @@ const CreateVehiclePage = () => {
                     </TabsTrigger>
                     <TabsTrigger
                     value="images"
-                    className="data-[state=active]:bg-white dark:data-[state=active]:bg-gray-800 data-[state=active]:text-black dark:data-[state=active]:text-white rounded-md flex items-center gap-2"
+                    className="data-[state=active]:border-b-zinc-950 data-[state=active]:bg-transparent data-[state=active]:shadow-none rounded-none dark:data-[state=active]:bg-gray-800 data-[state=active]:text-black dark:data-[state=active]:text-white  flex items-center gap-2"
                     >
                     <ImageIcon className="h-4 w-4" />
                     <span className="hidden sm:inline">Imagens</span>
@@ -429,7 +429,7 @@ const CreateVehiclePage = () => {
                     </TabsTrigger>
                     <TabsTrigger
                     value="technical"
-                    className="data-[state=active]:bg-white dark:data-[state=active]:bg-gray-800 data-[state=active]:text-black dark:data-[state=active]:text-white rounded-md flex items-center gap-2"
+                    className="data-[state=active]:border-b-zinc-950 data-[state=active]:bg-transparent data-[state=active]:shadow-none rounded-none dark:data-[state=active]:bg-gray-800 data-[state=active]:text-black dark:data-[state=active]:text-white  flex items-center gap-2"
                     >
                     <Settings className="h-4 w-4" />
                     <span className="hidden sm:inline">Detalhes Técnicos</span>
@@ -437,7 +437,7 @@ const CreateVehiclePage = () => {
                     </TabsTrigger>
                     <TabsTrigger
                     value="additional"
-                    className="data-[state=active]:bg-white dark:data-[state=active]:bg-gray-800 data-[state=active]:text-black dark:data-[state=active]:text-white rounded-md flex items-center gap-2"
+                    className="data-[state=active]:border-b-zinc-950 data-[state=active]:bg-transparent data-[state=active]:shadow-none rounded-none dark:data-[state=active]:bg-gray-800 data-[state=active]:text-black dark:data-[state=active]:text-white  flex items-center gap-2"
                     >
                     <Tag className="h-4 w-4" />
                     <span className="hidden sm:inline">Opções Adicionais</span>
