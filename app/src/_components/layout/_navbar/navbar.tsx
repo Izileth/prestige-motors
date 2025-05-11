@@ -1,7 +1,8 @@
 
 import { useState, useEffect } from "react";
-import { Link } from "react-router";
-import { usePathname } from "next/navigation";
+
+import { Link, useLocation } from "react-router-dom";
+
 import { cn } from "~/lib/utils";
 import { Button } from "~/components/ui/button";
 import { 
@@ -101,7 +102,8 @@ const Navigation: React.FC<NavigationProps> = ({
     className,
     }) => {
     const [isMobile, setIsMobile] = useState<boolean>(false)
-    const pathname = usePathname()
+    const { pathname } = useLocation();
+
 
     // Use the auth hook to access authentication state and functions
     const { user, isAuthenticated, logout } = useAuth()
