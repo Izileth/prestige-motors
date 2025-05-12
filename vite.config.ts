@@ -6,16 +6,7 @@ import tsconfigPaths from "vite-tsconfig-paths";
 export default defineConfig({
   plugins: [tailwindcss(), reactRouter(), tsconfigPaths()],
   build: {
-    sourcemap: false,  // Desabilita os source maps para produção  
-    ssr: false, 
-    rollupOptions: {
-    output: {
-      manualChunks: {
-        react: ['react', 'react-dom'],
-        router: ['react-router', 'react-router-dom'],
-        vendors: ['lodash', 'axios', 'zod']
-      }
-    },
-  }
+    outDir: 'dist', // A Vercel espera essa pasta por padrão
+    ssr: false // Desative SSR se não estiver usando
   },
 });
