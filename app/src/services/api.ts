@@ -1,4 +1,6 @@
-import axios, { AxiosError} from 'axios';
+
+import axios from 'axios';
+import { AxiosError } from 'axios';
 import type { AxiosInstance, AxiosResponse } from 'axios';
 
 const API_URL = 'http://localhost:4242/api';

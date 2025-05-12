@@ -13,8 +13,13 @@ import {
   REGISTER,
 } from 'redux-persist';
 import storage from './persist';
+
 import authReducer from './slices/auth';
 import vehicleReducer from './slices/vehicle';
+import negociationReducer from './slices/negociation'
+import reviewReducer from './slices/reviews'
+import favoriteReducer from './slices/favorites'
+import viewReducer from './slices/view'
 import userReducer from './slices/user';
 import saleReducer from './slices/sales';
 
@@ -24,6 +29,10 @@ const isServer = typeof window === 'undefined';
 const rootReducer = combineReducers({
   auth: authReducer,
   vehicles: vehicleReducer,
+  review: reviewReducer,
+  favorite: favoriteReducer,
+  view: viewReducer,
+  negociation: negociationReducer,
   user: userReducer,
   sales: saleReducer,
 });
@@ -35,7 +44,7 @@ export type RootState = ReturnType<typeof rootReducer>;
 const persistConfig = {
   key: 'root',
   storage,
-  whitelist: ['auth', 'vehicles', 'user'], // Persiste apenas esses estados
+  whitelist: ['auth', 'vehicles', 'user', 'review', 'favorite',  'view'], // Persiste apenas esses estados
   version: 1,
 };
 

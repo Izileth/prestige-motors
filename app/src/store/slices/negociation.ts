@@ -46,7 +46,7 @@ export const fetchUserNegotiations = createAsyncThunk(
 
 // Adicione os reducers
 const negociationSlice = createSlice({
-    name: 'negociation',
+    name: 'vehicle/negociation',
     initialState,
     reducers: {
         // ... outros reducers ...

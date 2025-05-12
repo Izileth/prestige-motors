@@ -25,6 +25,10 @@ import {
   setCurrentVehicle
 } from '~/src/store/slices/vehicle';
 
+import {} from '~/src/store/slices/negociation'
+//import {fetchUserFavorites, addFavorite, removeFavorite} from '~/src/store/slices/favorites'
+//import {fetchVehicleReviews, createReview} from '~/src/store/slices/reviews'
+//import {fetchVehicleViews, registerVehicleView} from '~/src/store/slices/view'
 
 import type { Vehicle, VehicleCreateInput, VehicleSearchParams } from '../types/vehicle';
 import type { VehicleUpdateInput, ReviewCreateInput } from '../types/inputs';
