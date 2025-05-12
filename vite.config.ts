@@ -7,6 +7,5 @@ export default defineConfig({
   plugins: [tailwindcss(), reactRouter(), tsconfigPaths()],
   build: {
     outDir: 'dist', // A Vercel espera essa pasta por padrão
-    ssr: false // Desative SSR se não estiver usando
   },
 });
