@@ -3,8 +3,12 @@
     "buildCommand": "npm run build",
     "outputDirectory": "build",
     "framework": "vite",
-    "routes": [
-        { "handle": "filesystem" },
-        { "app": "/.*", "dest": "/index.tsx" }
-    ]
+    "rewrites": [
+        { "source": "/(.*)", "destination": "/index.js" }
+    ],
+    "functions": {
+        "index.js": {
+        "includeFiles": "build/**"
+        }
+  }
 }
