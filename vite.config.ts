@@ -7,6 +7,15 @@ export default defineConfig({
   plugins: [tailwindcss(), reactRouter(), tsconfigPaths()],
   build: {
     sourcemap: false,  // Desabilita os source maps para produção  
-    ssr: false // Desativa SSR se não estiver usando
+    ssr: false, 
+    rollupOptions: {
+    output: {
+      manualChunks: {
+        react: ['react', 'react-dom'],
+        router: ['react-router', 'react-router-dom'],
+        vendors: ['lodash', 'axios', 'zod']
+      }
+    },
+  }
   },
 });
