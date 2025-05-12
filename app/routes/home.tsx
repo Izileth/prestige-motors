@@ -1,5 +1,5 @@
 import type { Route } from "./+types/home";
-import { Started } from "..";
+import { Started } from "../src";
 export function meta({}: Route.MetaArgs) {
   return [
     { title: "Home | Prestige Motors" },
@@ -8,5 +8,5 @@ export function meta({}: Route.MetaArgs) {
 }
 
 export default function Home() {
-  return <Started/>;
+  return <Started />;
 }

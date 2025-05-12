@@ -2,7 +2,7 @@
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
 import { persistor, store } from '~/src/store/store';
-import { useAuth } from './src/hooks/useAuth';
+import { useAuth } from '../hooks/useAuth';
 import { useEffect, useState } from 'react';
 
 // Wrapper que verifica se estamos no cliente ou no servidor
