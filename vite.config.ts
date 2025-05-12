@@ -9,5 +9,10 @@ export default defineConfig({
     alias: {
       '@reduxjs/toolkit': 'node_modules/@reduxjs/toolkit'
     }
-  }
+  },
+  build: {
+    outDir: 'dist', // Changed from 'build' to 'dist'
+    emptyOutDir: true,
+  },
+  
 });
