@@ -8,7 +8,7 @@ import {
 } from "~/components/ui/select";
 import { Slider } from "~/components/ui/slider";
 import { Button } from "~/components/ui/button";
-import { Filter, X } from "lucide-react";
+import { X } from "lucide-react";
 import type { VehicleSearchParams } from "~/src/types/vehicle";
 
 interface VehicleFiltersProps {

@@ -40,33 +40,33 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta
           name="description"
-          content="Descubra a essência da moda com Ecliptica. Um universo onde sofisticação, mistério e autenticidade se encontram."
+          content="Descubra a essência da exclusividade automotiva com a Prestige Motors. Veículos de luxo, performance e design sofisticado que redefinem sua experiência ao volante."
         />
         <meta
           name="keywords"
-          content="moda, sofisticação, estilo, ecliptica, exclusividade, elegância, tendência, moda masculina, moda feminina, streetwear, luxo"
+          content="Prestige Motors, carros de luxo, veículos exclusivos, performance automotiva, carros premium, experiência personalizada, sofisticação automotiva"
         />
         <meta
           property="og:title"
-          content="Ecliptica - A Revolução da Moda Sofisticada"
+          content="Prestige Motors - Exclusividade e Sofisticação Automotiva"
         />
         <meta
           property="og:description"
-          content="Mergulhe na moda enigmática e exclusiva da Ecliptica. Uma experiência para quem busca mais do que roupas, mas identidade."
+          content="Explore a linha exclusiva de veículos de alto padrão da Prestige Motors. Conquiste seu próximo carro com performance e estilo incomparáveis."
         />
         <meta
           property="og:image"
-          content="https://i.pinimg.com/736x/00/e4/e9/00e4e9cc4ffdb2d0326f1cb56c540486.jpg"
+          content="https://www.prestigemotors.com/og-image.jpg"
         />
-        <meta property="og:url" content="https://www.ecliptica.com" />
+        <meta property="og:url" content="https://www.prestigemotors.com" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta
           name="twitter:title"
-          content="Ecliptica - Moda Atemporal e Misteriosa"
+          content="Prestige Motors - Veículos de Luxo e Exclusividade"
         />
         <meta
           name="twitter:description"
-          content="Descubra a essência da moda com Ecliptica. Um universo onde sofisticação, mistério e autenticidade se encontram."
+          content="Descubra a paixão pela excelência automotiva com a Prestige Motors. Uma experiência única para amantes de carros de alto padrão."
         />
         <meta name="twitter:image" content="/og-image.jpg" />
         <link

@@ -5,14 +5,15 @@ import tsconfigPaths from "vite-tsconfig-paths";
 
 export default defineConfig({
   plugins: [tailwindcss(), reactRouter(), tsconfigPaths()],
-  resolve: {
-    alias: {
-      '@reduxjs/toolkit': 'node_modules/@reduxjs/toolkit'
-    }
-  },
   build: {
-    outDir: 'dist', // Changed from 'build' to 'dist'
-    emptyOutDir: true,
-  },
-  
+    outDir: 'build',
+    ssr: true, 
+    rollupOptions: {
+      input: {
+        server: 'src/entry-server.tsx', // Ponto de entrada do SSR
+        client: 'index.html'
+      }
+    }
+  }
+
 });

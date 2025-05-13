@@ -3,24 +3,24 @@ import { motion, AnimatePresence } from "framer-motion"
 import { X, ChevronLeft, ChevronRight } from "lucide-react"
 
 const promos = [
-  {
-    id: 1,
-    text: "Cadastre-se e receba recomendações dos nossos parceiros",
-    link: "/register",
-    cta: "Saiba mais",
-  },
-  {
-    id: 2,
-    text: "Oferta relâmpago! 10% de desconto em veículos à vista",
-    link: "/vehicles",
-    cta: "Aproveite",
-  },
-  {
-    id: 3,
-    text: "Garantia estendida de 2 anos em todos os seminovos",
-    link: "/destacts",
-    cta: "Confira",
-  },
+    {
+        id: 1,
+        text: "Cadastre-se e receba recomendações dos nossos parceiros",
+        link: "/register",
+        cta: "Saiba mais",
+    },
+    {
+        id: 2,
+        text: "Oferta relâmpago! 10% de desconto em veículos à vista",
+        link: "/vehicles",
+        cta: "Aproveite",
+    },
+    {
+        id: 3,
+        text: "Garantia estendida de 2 anos em todos os seminovos",
+        link: "/destacts",
+        cta: "Confira",
+    },
 ]
 
 export function Banner() {

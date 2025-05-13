@@ -3,7 +3,6 @@ import { Mail, ArrowLeft } from "lucide-react";
 import { useAuth } from "~/src/hooks/useAuth";
 import { useNavigate } from "react-router";
 import { Link } from "react-router";
-import { route } from "@react-router/dev/routes";
 
 export default function RecoverPasswordPage() {
     const { requestPasswordReset, status, error, clearPasswordResetStatus } = useAuth();
