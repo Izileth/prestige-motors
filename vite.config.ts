@@ -13,7 +13,10 @@ export default defineConfig({
         server: 'src/entry-server.tsx', // Ponto de entrada do SSR
         client: 'index.html'
       }
-    }
+    },
+    commonjsOptions: {
+      transformMixedEsModules: true, // Força a conversão de CJS para ESM
+    },
   }
 
 });
