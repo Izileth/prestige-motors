@@ -1,6 +1,4 @@
 {
-    "version": 2,
-    "buildCommand": "npm run build",
-    "outputDirectory": "build/server",
-    "rewrites": [{ "source": "/(.*)", "destination": "/index.js" }]
+  "version": 2,
+  "rewrites": [{ "source": "/(.*)", "destination": "/" }]
 }

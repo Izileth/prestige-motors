@@ -99,7 +99,7 @@ export default function App() {
     <ReduxProviders>
       <Banner />
       <Navigation />
-      <Outlet />
+        <Outlet />
       <Baseboard />
       <Footer />
     </ReduxProviders>
