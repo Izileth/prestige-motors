@@ -8,15 +8,5 @@ export default defineConfig({
   build: {
     outDir: 'build',
     ssr: true, 
-    rollupOptions: {
-      input: {
-        server: 'src/entry-server.tsx', // Ponto de entrada do SSR
-        client: 'index.html'
-      }
-    },
-    commonjsOptions: {
-      transformMixedEsModules: true, // Força a conversão de CJS para ESM
-    },
   }
-
 });
