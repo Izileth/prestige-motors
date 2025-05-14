@@ -345,7 +345,7 @@ const SupportPage = () => {
             >
                 <a
                 href="tel:+5511999998888"
-                className="inline-block border border-white text-white px-10 py-3 font-light tracking-wide hover:bg-white hover:text-gray-900 transition-colors duration-300 group flex items-center mx-auto justify-center"
+                className="inline-block border border-white text-white px-10 py-3 font-light tracking-wide hover:bg-white hover:text-gray-900 transition-colors duration-300 group -center mx-auto justify-center"
                 >
                 <Phone size={18} strokeWidth={1.5} className="mr-3" />
                 <span>+55 11 99999-8888</span>

@@ -5,4 +5,10 @@
 /.react-router/
 /build/
 
+#Vercel
+
 .vercel
+
+#Env
+
+.env
