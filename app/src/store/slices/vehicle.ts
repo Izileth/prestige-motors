@@ -5,8 +5,8 @@ import vehicleService from '~/src/services/vehicle';
 
 import type { ReviewCreateInput, VehicleUpdateInput } from '~/src/types/inputs';
 
-import type { Vehicle, VehicleImage, VehicleStats, VehicleVideo, VehicleCreateInput, VehicleSearchParams } from '~/src/types/vehicle';
-import type { Review, ReviewStats } from '~/src/types/reviews';
+import type { Vehicle, VehicleStats, VehicleCreateInput, VehicleSearchParams } from '~/src/types/vehicle';
+import type { Review} from '~/src/types/reviews';
 
 export interface VehicleState {
   vehicles: Vehicle[];

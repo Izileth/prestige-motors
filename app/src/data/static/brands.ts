@@ -4,12 +4,13 @@ export interface Brand {
     logo: string
     link: string
 }
-import Brand_AMG from '~/public/assets/brands/Brand_AMG.png'
-import Brand_Toyota from '~/public/assets/brands/Brand_Toyota.png'
-import Brand_Porshe from '~/public/assets/brands/Brand_Porshe.png'
-import Brand_Ferrari from '~/public/assets/brands/Brand_Ferrari.png'
-import Brand_Lamborginhi from '~/public/assets/brands/Brand_Lamborginhi.png'
-import Brand_BMW from '~/public/assets/brands/Brand_BMW.png'
+import Brand_AMG from 'public/assets/brands/Brand_AMG.png'
+import Brand_Toyota from 'public/assets/brands/Brand_Toyota.png'
+import Brand_Porshe from 'public/assets/brands/Brand_Porshe.png'
+import Brand_Ferrari from 'public/assets/brands/Brand_Ferrari.png'
+import Brand_Lamborginhi from 'public/assets/brands/Brand_Lamborginhi.png'
+import Brand_BMW from 'public/assets/brands/Brand_BMW.png'
+
 export const VehicleBrands: Brand[] = [
     {
         id: 1,
